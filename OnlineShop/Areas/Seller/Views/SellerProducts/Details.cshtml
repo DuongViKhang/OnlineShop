@@ -28,39 +28,45 @@
         <dt>
             Loại
         </dt>
-        @foreach(var style in ViewBag.style)
+        @if(ViewBag.style.Count == 0)
         {
-            <dd style="margin-left: 10px;">
-                @style.StyleName
-                <br/>
-                <a asp-route-id="@style.StyleId" asp-action="EditStyle">Chỉnh sửa</a>
-                @if(style.IsDeleted == 0) {
-                    <a class="confirm" data-isdeleted="0"  style="margin-left: 20px;" href="@Url.Action("Confirm", new { id = style.StyleId })">Ngừng bán</a>
-                }
-                else
-                {
-                    <a class="confirm" data-isdeleted="0" style="margin-left: 20px;" href="@Url.Action("Confirm", new { id = style.StyleId })">Mở bán</a>
-                }
-             </dd>
+            <p>Chưa có loại sản phẩm</p>
         }
-        <script>
-            var deleteButtons = document.querySelectorAll(".confirm");
-            deleteButtons.forEach(function(button) {
-                button.addEventListener("click", function(event) {
-                    event.preventDefault();
-                    var message;
-                    var isDeleted = this.getAttribute("data-isdeleted");
-                    if (isDeleted === "0") {
-                        message = "Bạn có chắc chắn muốn ngừng bán không?";
-                    } else {
-                        message = "Bạn có chắc chắn muốn mở bán không?";
+        else {
+            @foreach(var style in ViewBag.style)
+            {
+                <dd style="margin-left: 10px;">
+                    @style.StyleName
+                    <br/>
+                    <a asp-route-id="@style.StyleId" asp-action="EditStyle">Chỉnh sửa</a>
+                    @if(style.IsDeleted == 0) {
+                        <a class="confirm" data-isdeleted="0"  style="margin-left: 20px;" href="@Url.Action("Confirm", new { id = style.StyleId })">Ngừng bán</a>
                     }
-                    if (confirm(message)) {
-                        window.location.href = this.href;
+                    else
+                    {
+                        <a class="confirm" data-isdeleted="0" style="margin-left: 20px;" href="@Url.Action("Confirm", new { id = style.StyleId })">Mở bán</a>
                     }
+                 </dd>
+            }
+            <script>
+                var deleteButtons = document.querySelectorAll(".confirm");
+                deleteButtons.forEach(function(button) {
+                    button.addEventListener("click", function(event) {
+                        event.preventDefault();
+                        var message;
+                        var isDeleted = this.getAttribute("data-isdeleted");
+                        if (isDeleted === "0") {
+                            message = "Bạn có chắc chắn muốn ngừng bán không?";
+                        } else {
+                            message = "Bạn có chắc chắn muốn mở bán không?";
+                        }
+                        if (confirm(message)) {
+                            window.location.href = this.href;
+                        }
+                    });
                 });
-            });
-        </script>
+            </script>
+        }
         <dt>
             Giá
         </dt>
