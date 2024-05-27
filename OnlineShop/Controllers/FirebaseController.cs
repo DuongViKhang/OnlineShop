@@ -160,9 +160,13 @@ namespace OnlineShop.Controllers
 								{
 									if (sortedMessages.First()["senderId"].ToString() == sellerId)
 									{
-										lastMessage = sortedMessages.ElementAt(0).ToString();
+										lastMessage = sortedMessages.ElementAt(1).ToString();
 									}
-									
+									else
+									{
+										lastMessage = sortedMessages.ElementAt(0).ToString();
+
+									}
 									var mess = new
 									{
 										userId = ExtractUserId(pair.Key),

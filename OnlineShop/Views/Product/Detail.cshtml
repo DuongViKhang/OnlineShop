@@ -63,9 +63,9 @@
                                                 </li>
                                                 @{
                                                     var i = Model.Rating;
-                                                                                                                                        @while (i > 0)
+                                                                                                                                                @while (i > 0)
                                                     {
-                                                                                                                                            <li><i class="pe-7s-star"></i></li>
+                                                                                                                                                    <li><i class="pe-7s-star"></i></li>
                                                         i--;
                                                     }
                                                 }
@@ -165,7 +165,36 @@
                                                 });
                                             });
 
-                                        
+                                            document.getElementById('imageInput').addEventListener('change', function (event) {
+                                                // Lấy ra danh sách các tệp đã chọn
+                                                var files = event.target.files;
+    
+                                                // Kiểm tra xem người dùng đã chọn tệp nào chưa
+                                                if (files.length > 0) {
+                                                    var selectedFile = files[0];
+                                                        var reader = new FileReader();
+                                                        reader.onload = function (e) {
+                                                            var imageUrl = e.target.result;
+                                                            // Tạo một phần tử img và thiết lập src để hiển thị ảnh
+                                                        document.getElementById("imagePreviewContainer").style = "display";
+                                                            var imagePre = document.getElementById("imagePreview");
+                                                            imagePre.src = imageUrl;
+                                                        imagePre.style = "margin:10px;border-radius:5px; max-height:80px; max-width: 80px; margin-top:-5px;";
+                                                        };
+                                                        reader.readAsDataURL(selectedFile); // Đọc dữ liệu ảnh và chuyển đổi thành URL
+                                                    
+                                                } else {
+                                                    console.log("No file selected.");
+                                                }
+                                            });
+                                            function removeImageSelected(){
+                                                document.getElementById("imagePreviewContainer").style = "display:none";
+                                                document.getElementById('imageInput').value = '';
+                                                // Xóa nội dung của div hiển thị ảnh
+                                                event.target.innerHTML = '';
+                                                var imagePre = document.getElementById("imagePreview");
+                                                imagePre.style = "display:none";
+                                            }
 
                                         </script>
                                         <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
@@ -201,6 +230,7 @@
                                             });
 
                                             function sendMessage() {
+                                                
                                                 var sellerId = document.getElementById("sellerId").value;
                                                 var message = document.getElementById("messageChatInput").value;
                                                 const fileInput = document.getElementById("imageInput");
@@ -229,13 +259,14 @@
                                                             };
                                                             loadImageData(file)
                                                                 .then((imageData) => {
-                                                                    displayMessage("You", message, imageData);
+                                                                    displayMessage("You", imageData);
                                                                     pushMessageToFirebase(senderId, sellerId, imageData, senderId);
                                                                     // Gửi dữ liệu hình ảnh lên server
                                                                     connection.invoke("SendImage", sellerId, senderId, imageData)
                                                                         .catch((err) => {
                                                                             console.error(err.toString());
                                                                         });
+                                                                    removeImageSelected();
                                                                 })
                                                                 .catch((err) => {
                                                                     console.error(err.toString());
@@ -264,6 +295,7 @@
                                                         senderId: senderId
                                                     }),
                                                     success: function (response) {
+                                                 
                                                         console.log(response); // Log response from server
                                                         // Handle success
                                                     },
@@ -300,10 +332,12 @@
                                                                         else {
                                                                             initChat(messageObj.content, false, messageObj.timeSend);
                                                                         }
+                                                                        document.getElementById("chat_fullscreen").scrollTop = document.getElementById("chat_fullscreen").scrollHeight;
                                                                     }
                                                                 });
                                                             }
                                                         });
+                                                        
 
                                                     },
                                                     error: function (xhr, status, error) {
@@ -375,9 +409,7 @@
 
                                                     // Tạo phần tử img
                                                     var img = document.createElement("img");
-                                                    getSelletInfo("userId", function (data) {
-                                                        console.log(data);
-                                                    });
+                                          
                                                     img.src = avatarSrc;
                                                     img.style.cssText = "border-radius:5px; max-height:50px; max-width:50px;";
 
@@ -699,6 +731,7 @@
                 },
                 success: function (response) {
                     callback(Object.values(response));
+
                 },
                 error: function (xhr, status, error) {
                     // Xử lý khi có lỗi xảy ra trong quá trình request
@@ -806,6 +839,8 @@
 
             // Hiển thị các bình luận cho trang đầu tiên khi trang được tải
             showComments(currentPage, comments);
+  
+            
         });
        
         // Hàm để tạo các nút phân trang
@@ -874,6 +909,12 @@
             const avatarContainer = document.createElement('div');
             avatarContainer.style.marginRight = '30px';
 
+            // Tạo phần tử tên người dùng
+            const userName = document.createElement('p');
+            userName.style.fontSize = '16px';
+            userName.style.fontWeight = 'bold';
+            userName.style.marginBottom = '5px';
+
             getUserInfo(comment.userId, function (user){
                 
                 // Tạo phần tử avatar (img)
@@ -884,6 +925,10 @@
                 avatar.style.height = '50px';
                 avatar.style.borderRadius = '50%';
 
+
+                // Tạo phần tử tên người dùng
+                userName.textContent = user.userName;
+
                 // Thêm avatar vào container
                 avatarContainer.appendChild(avatar);
             })
@@ -891,13 +936,8 @@
 
             // Tạo phần tử chứa nội dung bình luận
             const contentContainer = document.createElement('div');
-
-            // Tạo phần tử tên người dùng
-            const userName = document.createElement('p');
-            userName.style.fontSize = '16px';
-            userName.style.fontWeight = 'bold';
-            userName.style.marginBottom = '5px';
-            userName.textContent = comment.user;
+           
+            
 
             // Tạo phần tử nội dung bình luận
             const content = document.createElement('p');
@@ -1080,6 +1120,7 @@
 
         // Xử lý sự kiện cuộc gọi đến
         peer.on('call', function (incomingCall) {
+            document.getElementById('endCall').style = "display:none";
             function confirmAction() {
                 removeButtons();
                 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -1202,6 +1243,10 @@
         <div id="chat_fullscreen" class="chat_conversion chat_converse">
         </div>
         <div class="fab_field">
+            <div id="imagePreviewContainer" style="display:none">
+                <p>Bấm vào ảnh để bỏ chọn</p>
+                <img onclick="removeImageSelected()" src="#" id="imagePreview" style="border-radius:5px; max-height:80px; max-width: 80px; margin-top:-5px;margin:10px; display:none" />
+            </div>
             <a style="display: inline-block; position: relative; overflow: hidden; padding: 12px 4px; background-color: #f5f6f7; color: #4b4f56; border: 1px solid #ced0d4; border-radius: 4px; cursor: pointer;" id="callVideo" onclick="openModal(true)" class="videoCall"><i  class="fa fa-video-camera"></i></a>
             <label style="display: inline-block; position: relative; overflow: hidden; padding: 12px 4px; background-color: #f5f6f7; color: #4b4f56; border: 1px solid #ced0d4; border-radius: 4px; cursor: pointer;">
                 <i  class="fa fa-file"></i>

@@ -61,7 +61,12 @@
 			</div>
 			<div class="row">
 				<div class="col-12">
+					<div id="imagePreviewContainer" style="display:none">
+						<p>Bấm vào ảnh để bỏ chọn</p>
+						<img onclick="removeImageSelected()" src="#" id="imagePreview" style="display:none" />
+					</div>
 					<div class="chat-box-tray" style="display: flex; justify-content: space-between;">
+						
 						@* <i class="material-icons">sentiment_very_satisfied</i> *@
 						<input onkeyup="if(event.keyCode === 13) sendMessage()" id="messageChatInput" type="text" placeholder="Nhập tin nhắn ...">
 						<label style="display: inline-block; position: relative; overflow: hidden; padding: 6px 12px; background-color: #f5f6f7; color: #4b4f56; border: 1px solid #ced0d4; border-radius: 4px; cursor: pointer;">
@@ -106,7 +111,35 @@
 				}
 			});
 		});
+		document.getElementById('imageInput').addEventListener('change', function (event) {
+			// Lấy ra danh sách các tệp đã chọn
+			var files = event.target.files;
+			// Kiểm tra xem người dùng đã chọn tệp nào chưa
+			if (files.length > 0) {
+				var selectedFile = files[0];
+				var reader = new FileReader();
+				reader.onload = function (e) {
+					var imageUrl = e.target.result;
+					// Tạo một phần tử img và thiết lập src để hiển thị ảnh
+					document.getElementById("imagePreviewContainer").style = "display";
+					var imagePre = document.getElementById("imagePreview");
+					imagePre.src = imageUrl;
+					imagePre.style = "margin:10px;border-radius:5px; max-height:80px; max-width: 80px; margin-top:-5px;";
+				};
+				reader.readAsDataURL(selectedFile); // Đọc dữ liệu ảnh và chuyển đổi thành URL
 
+			} else {
+				console.log("No file selected.");
+			}
+		});
+		function removeImageSelected() {
+			document.getElementById("imagePreviewContainer").style = "display:none";
+			document.getElementById('imageInput').value = '';
+			// Xóa nội dung của div hiển thị ảnh
+			event.target.innerHTML = '';
+			var imagePre = document.getElementById("imagePreview");
+			imagePre.style = "display:none";
+		}
 		function pushMessageToFirebase(userId, sellerId, message, senderId) {
 			$.ajax({
 				url: '/api/Firebase/SetMessage',
@@ -187,6 +220,7 @@
 				success: function (data) {
 					let isFirst = true;
 					data.forEach(function (item) {
+						console.log(item);
 						var messageObj = JSON.parse(item.message);									
 						createCustomer(item.userId, sellerId, messageObj.content, messageObj.timeSend);
 						createChatPanel(item.userId, '')
@@ -283,7 +317,8 @@
 							.catch((err) => {
 								console.error(err.toString());
 							});
-						fileInput.value = null;						
+						fileInput.value = null;
+						removeImageSelected();
 					}					
 				}
 			});
@@ -605,7 +640,11 @@
 			});
 		}
 		function isBase64(str) {
-			return str.includes("data:image/jpeg;base64");
+			if (typeof str === 'string') {
+				return str.includes("data:image/jpeg;base64");
+			} else {
+				return false; // Không phải chuỗi, không thể là base64
+			}
 		}
 
 	</script>
@@ -738,6 +777,7 @@
 
 		// Xử lý sự kiện cuộc gọi đến
 		peer.on('call', function (incomingCall) {
+			document.getElementById('endCall').style = "display:none";
 			function confirmAction() {
 				removeButtons();
 				navigator.mediaDevices.getUserMedia({ video: true, audio: true })
