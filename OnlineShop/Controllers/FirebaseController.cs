@@ -243,6 +243,72 @@ namespace OnlineShop.Controllers
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
+
+		public class NoticeSend
+		{
+			public String receivedId { get; set; }
+			public String content { get; set; }
+
+        }
+
+        public class NoticeData
+        {
+            public String id { get; set; }
+            public String message { get; set; }
+            public Boolean seen { get; set; }
+
+        }
+        public class Body
+        {
+            public String name { get; set; }
+
+        }
+
+        [HttpPost("PushNotice")]
+        public async Task<IActionResult> PushNoticeToFirebase([FromBody] NoticeSend notice)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string nodeNotice = $"notices/customerId_{notice.receivedId}";
+                var noticeData = new
+                {
+                    message = notice.content,
+                    seen = false,
+                };
+
+                PushResponse response = await _client.PushAsync(nodeNotice, noticeData);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+					var body = JsonConvert.DeserializeObject<Body>(response.Body.ToString());
+                    string nodeNoticeUpdate = $"notices/customerId_{notice.receivedId}/{body.name}";
+					var noticeDataUpdate = new
+					{
+						id = body.name,
+                        message = notice.content,
+                        seen = false,
+                    };
+                    await _client.SetAsync(nodeNoticeUpdate, noticeDataUpdate);
+                    return Ok("Notice created successfully");
+                }
+                else
+                {
+                    return BadRequest("Failed to create chat. Status code: " + response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+
+
         private string ExtractUserId(string inputString)
 		{
 			string[] parts = inputString.Split('_');

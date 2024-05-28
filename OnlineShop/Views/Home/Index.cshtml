@@ -228,6 +228,24 @@
         <script src="https://cdn.jsdelivr.net/npm/peerjs@1.3.2/dist/peerjs.min.js"></script>
         <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
         <script>
+           
+
+            $.ajax({
+                url: '/api/Firebase/PushNotice', // Thay đổi URL thành URL của API
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    receivedId: "1",
+                    content: "Test"
+                }),
+                success: function (response) {
+                    $('#response').html('<p>' + response + '</p>');
+                },
+                error: function (xhr, status, error) {
+                    $('#response').html('<p>' + xhr.responseText + '</p>');
+                }
+            });
+
             var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
 
             connection.start().then(function () {

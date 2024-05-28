@@ -8,8 +8,18 @@
 }
 
 <h2>Danh sách đơn hàng</h2>
+<div style="max-width:400px;flex-direction:row">
+    <form asp-action="ReceiveOrderList" asp-controller="Home" method="get">
+        <input style="width:300px" name="keyword" type="text" placeholder="Tìm kiếm theo địa chỉ hoặc sđt">
+        <button class="btn btn-primary" type="submit">Tim</button>
+    </form>
+</div>
 
 <br />
+@if (Model.Count() == 0)
+{
+    <p class="text-danger">Không có đơn hàng nào</p>
+}
 <table class="table">
     <thead>
         <tr>

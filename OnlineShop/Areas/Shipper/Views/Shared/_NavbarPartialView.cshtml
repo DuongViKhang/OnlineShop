@@ -13,7 +13,7 @@
 				}
 				@if (HttpContextAccessor.HttpContext.Session.GetString("avatar") != null)
 				{
-					<img src="~/upload/images/avatars/admin/@HttpContextAccessor.HttpContext.Session.GetString("avatar")"
+					<img src="~/upload/images/avatars/customer/@HttpContextAccessor.HttpContext.Session.GetString("avatar")"
 						 class="avatar img-fluid rounded me-1" alt="Charles Hall" />
 					<span class="text-dark">@ViewBag.username</span>
 				}
