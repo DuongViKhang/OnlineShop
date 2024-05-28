@@ -54,7 +54,9 @@
                                                             word-break: break-all; word-wrap: break-word;
                                                             white-space: normal;">@item.ProductName</p>
                                                     </div>
-                                                    <div><span class="amount" style="padding-left:10px; font-weight:bold; white-space:nowrap;">@item.StyleName x @item.Count: </span></div>
+                                                    <div>
+                                                        <span class="amount" style="padding-left:10px; font-weight:bold; white-space:nowrap;">x @item.Count: </span>
+                                                    </div>
                                                     <div><span class="amount" style="padding-left:10px;">@item.Total.ToString("#,##0") VNĐ</span></div>
                                                     @if(Model.Status.StatusName=="Đã nhận")
                                                     {

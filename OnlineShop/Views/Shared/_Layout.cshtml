@@ -487,8 +487,15 @@
                                         </div>
                                         <div class="product-item_content">
                                             <p class="product-item_title">@item.ProductName</p>
-                                             <span class="product-item_quantity"><h7 style="font-weight:bold;">Loại: </h7> @item.StyleName</span>
-                                             <span class="product-item_quantity"><h7 style="font-weight:bold;">x @item.Count:</h7> @item.Total.ToString("#,##0") VNĐ</span>
+                                            @if(item.StyleName != null)
+                                            {
+                                                <span class="product-item_quantity"><h7 style="font-weight:bold;">Loại: </h7> @item.StyleName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="product-item_quantity"><h7 style="font-weight:bold;">Loại: </h7> Mặc định</span>
+                                            }
+                                            <span class="product-item_quantity"><h7 style="font-weight:bold;">x @item.Count:</h7> @item.Total.ToString("#,##0") VNĐ</span>
                                         </div>
                                     </li>
                                 }

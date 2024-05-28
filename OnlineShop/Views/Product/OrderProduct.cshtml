@@ -99,8 +99,14 @@
                                                                                             width: 202px; height: auto;
                                                                                             word-break: break-all; word-wrap: break-word;
                                                                                             white-space: normal;">@ViewBag.ProductName</p></td>
-                                                    <td class="cart-product-total"><span class="amount" style="padding-left:35px; font-weight:bold;">@ViewBag.Style.StyleName</span></td>
-                                                    <td class="cart-product-total"><span class="amount" style="padding-left:5px; font-weight:bold;">x @ViewBag.Count</span></td>
+                                                    @if(ViewBag.Style != null){
+                                                        <td class="cart-product-total"><span class="amount" style="padding-left:35px; font-weight:bold;">@ViewBag.Style.StyleName</span></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="cart-product-total"><span class="amount" style="padding-left:35px; font-weight:bold;">Mặc định</span></td>
+                                                    }
+                                            <td class="cart-product-total"><span class="amount" style="padding-left:5px; font-weight:bold;">x @ViewBag.Count</span></td>
                                                     <td class="cart-product-total"><span class="amount"  style="margin-left:-30px; font-weight:bold;">@ViewBag.Total.ToString("#,##0") VNĐ</span></td>
                                                 </tr>
                                             </tbody>
@@ -114,7 +120,10 @@
                                     </div>
                                     <div class="payment-method">
                                         <div class="payment-accordion">
-                                            <input id="styleId" name="styleId" type="hidden" value="@ViewBag.Style.StyleId">
+                                            @if(ViewBag.Style != null)
+                                            {
+                                                <input id="styleId" name="styleId" type="hidden" value="@ViewBag.Style.StyleId">
+                                            }
                                             <input id="productId" name="productId" type="hidden" value="@ViewBag.ProductId">
                                             <input id="count" name="count" type="hidden" value="@ViewBag.Count">
                                             <div class="order-button-payment">

@@ -102,8 +102,14 @@
                                                                                             width: 202px; height: auto;
                                                                                             word-break: break-all; word-wrap: break-word;
                                                                                             white-space: normal;">@item.ProductName</p></td>
-                                                    <td class="cart-product-total"><span class="amount" style="margin-left:20px; font-weight:bold;">@item.StyleName</span></td>
-                                                    <td class="cart-product-total"><span class="amount" style="padding-left:5px; font-weight:bold;">x @item.Count</span></td>
+                                                    @if(item.StyleName != null){
+                                                        <td class="cart-product-total"><span class="amount" style="margin-left:20px; font-weight:bold;">@item.StyleName</span></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="cart-product-total"><span class="amount" style="margin-left:20px; font-weight:bold;">Mặc định</span></td>
+                                                    }
+                                                <td class="cart-product-total"><span class="amount" style="padding-left:5px; font-weight:bold;">x @item.Count</span></td>
                                                     <td class="cart-product-total"><span class="amount" style="margin-left:-30px; font-weight:bold;">@item.Total.ToString("#,##0")&nbsp;VNĐ</span></td>
                                                 </tr>
                                             }

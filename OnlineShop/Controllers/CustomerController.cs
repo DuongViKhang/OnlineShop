@@ -107,19 +107,17 @@ namespace OnlineShop.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(user.UserName == null || user.IdCard == null || user.Email == null || 
-                    user.Phone == null || user.Password == null || user.Address == null)
+                if(user.UserName == null || user.Email == null || 
+                    user.Phone == null || user.Password == null)
                 {
                     ViewBag.mess = "Vui lòng điền đẩy đủ thông tin";
                     return View();
                 }
                 HttpContext.Session.SetString("username", user.UserName);
-                HttpContext.Session.SetString("idCard", user.IdCard);
                 HttpContext.Session.SetString("email", user.Email);
                 HttpContext.Session.SetString("phone", user.Phone);
                 HttpContext.Session.SetString("password", encryptPassword(user.Password));
                 //HttpContext.Session.SetString("password", user.Password);
-                HttpContext.Session.SetString("address", user.Address);
                 HttpContext.Session.SetString("avatar", "default.jpg");
                 var lst = _context.Users.ToList();
                 foreach(var item in lst)
@@ -227,13 +225,11 @@ namespace OnlineShop.Controllers
                         //Create new account for customer
                         User customer = new User();
                         customer.UserName = HttpContext.Session.GetString("username");
-                        customer.IdCard = HttpContext.Session.GetString("idCard");
                         customer.Email = HttpContext.Session.GetString("email");
                         customer.Phone = HttpContext.Session.GetString("phone");
                         customer.IsEmailActive = 1;
                         customer.Password = HttpContext.Session.GetString("password");
                         customer.RoleId = 2;
-                        customer.Address = HttpContext.Session.GetString("address");
                         customer.Avatar = HttpContext.Session.GetString("avatar");
                         customer.Date = DateTime.Now;
                         customer.IsDeleted = 0;
@@ -242,11 +238,9 @@ namespace OnlineShop.Controllers
 
                         HttpContext.Session.Clear();
                         HttpContext.Session.Remove("username");
-                        HttpContext.Session.Remove("idCard");
                         HttpContext.Session.Remove("email");
                         HttpContext.Session.Remove("phone");
                         HttpContext.Session.Remove("password");
-                        HttpContext.Session.Remove("address");
                         HttpContext.Session.Remove("avatar");
 
                         //Create new cart for new account

@@ -80,27 +80,34 @@
                                     <form asp-action="OrderProduct" method="get">
                                         <ul class="quantity-with-btn pb-7">
                                             <li class="quantity" style="display:flex;">
-                                                <input name="styleId" id="styleIdOrder" type="hidden" value="@ViewBag.Styles[0].StyleId">
-                                                <b style="margin-right: 20px; margin-top:6px;">Loại: </b>
-                                                <select class="form-select" onchange="redirectToSelectedStyle(this)">
-				                                    <option class="option" hidden>@ViewBag.Styles[0].StyleName</option>
-				                                    @foreach (var style in ViewBag.Styles)
-				                                    {
-					                                    <option class="option" value="@style" 
-                                                            data-styleid="@style.StyleId" data-imageurl="@style.Image">@style.StyleName</option>
-				                                    }
-			                                    </select>
-                                                <script>
-                                                    function redirectToSelectedStyle(selectElement) {
-                                                        var selectedOption = selectElement.options[selectElement.selectedIndex];
-                                                        var selectedStyleId = selectedOption.getAttribute('data-styleid');
-                                                        var selectedImageUrl = selectedOption.getAttribute('data-imageurl');
+                                                @if(ViewBag.Styles.Count > 0)
+                                                {
+                                                    <b style="margin-right: 20px; margin-top:6px;">Loại: </b>
+                                                    <input name="styleId" id="styleIdOrder" type="hidden" value="@ViewBag.Styles[0].StyleId">
+                                                    <select class="form-select" onchange="redirectToSelectedStyle(this)">
+				                                        <option class="option" hidden>@ViewBag.Styles[0].StyleName</option>
+				                                        @foreach (var style in ViewBag.Styles)
+				                                        {
+					                                        <option class="option" value="@style" 
+                                                                data-styleid="@style.StyleId" data-imageurl="@style.Image">@style.StyleName</option>
+				                                        }
+			                                        </select>
+                                                    <script>
+                                                        function redirectToSelectedStyle(selectElement) {
+                                                            var selectedOption = selectElement.options[selectElement.selectedIndex];
+                                                            var selectedStyleId = selectedOption.getAttribute('data-styleid');
+                                                            var selectedImageUrl = selectedOption.getAttribute('data-imageurl');
 
-                                                        document.getElementById('styleIdOrder').value = selectedStyleId;
-                                                        document.getElementById('styleIdCart').value = selectedStyleId;
-                                                        document.getElementById('productImage').src = '/upload/images/product/' + selectedImageUrl;
-                                                    }
-                                                </script>
+                                                            document.getElementById('styleIdOrder').value = selectedStyleId;
+                                                            document.getElementById('styleIdCart').value = selectedStyleId;
+                                                            document.getElementById('productImage').src = '/upload/images/product/' + selectedImageUrl;
+                                                        }
+                                                    </script>
+                                                }
+                                                else
+                                                {
+                                                    <b style="margin-right: 20px; margin-top:6px;">Loại: Mặc định</b>
+                                                }
                                             </li>
                                         </ul>
                                         <ul class="quantity-with-btn pb-7">
@@ -123,7 +130,10 @@
                                             <form asp-controller="ShoppingCart" asp-action="AddToCart" id="addToCart" method="post">
                                                 <input name="productId" value="@Model.ProductId" type="hidden" />
                                                 <input name="count" id="count" value="" type="hidden" />
-                                                <input name="styleId" id="styleIdCart" type="hidden" value="@ViewBag.Styles[0].StyleId">
+                                                @if(ViewBag.Styles.Count > 0)
+                                                {
+                                                    <input name="styleId" id="styleIdCart" type="hidden" value="@ViewBag.Styles[0].StyleId">
+                                                }
                                                 <button class="btn btn-custom-size lg-size btn-primary btn-secondary-hover rounded-0" type="submit">Thêm vào giỏ hàng</button>
                                             </form>
                                         </li>
