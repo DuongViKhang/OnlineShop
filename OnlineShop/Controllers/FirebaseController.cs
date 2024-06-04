@@ -263,6 +263,8 @@ namespace OnlineShop.Controllers
             public String id { get; set; }
             public String message { get; set; }
             public Boolean seen { get; set; }
+            public String url { get; set; }
+            public String sendDate { get; set; }
 
         }
         public class Body
@@ -299,6 +301,7 @@ namespace OnlineShop.Controllers
 						id = body.name,
                         message = notice.content,
                         seen = false,
+                        sendDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                     };
                     await _client.SetAsync(nodeNoticeUpdate, noticeDataUpdate);
                     return Ok("Notice created successfully");
