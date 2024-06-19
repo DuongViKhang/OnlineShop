@@ -28,6 +28,8 @@ namespace OnlineShop.Models
         public virtual DbSet<StatusOrder> StatusOrders { get; set; }
         public virtual DbSet<Style> Styles { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Voucher> Vouchers { get; set; }
+        public virtual DbSet<VoucherItem> VoucherItems { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -235,6 +237,26 @@ namespace OnlineShop.Models
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_id_role");
+            });
+
+            modelBuilder.Entity<Voucher>(entity =>
+            {
+                entity.ToTable("Voucher");
+
+                entity.Property(e => e.Description).HasMaxLength(100);
+
+                entity.Property(e => e.DiscountType).HasMaxLength(100);
+
+                entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ReleaseDate).HasColumnType("datetime");
+
+                entity.Property(e => e.VoucherName).HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<VoucherItem>(entity =>
+            {
+                entity.ToTable("VoucherItem");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -29,6 +29,7 @@ namespace OnlineShop.Models
         public int IsDeleted { get; set; }
 
         public virtual Category Category { get; set; }
+
         public virtual User Seller { get; set; }
         public virtual ICollection<CartItem> CartItems { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
