@@ -119,7 +119,16 @@
                                     @Html.PagedListPager((IPagedList) Model.productList, page => Url.Action("Index", new {page = page }),
                                     new PagedListRenderOptions {
                                     LiElementClasses = new string[] {"page-item"},
-                                    PageClasses = new string[] {"page-link"}
+                                    PageClasses = new string[] {"page-link"}, 
+                                    MaximumPageNumbersToDisplay = 5,
+                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                    DisplayEllipsesWhenNotShowingAllPageNumbers = true, 
+                                    EllipsesElementClass = "page-item disabled",
+                                    LinkToPreviousPageFormat = "<",
+                                    LinkToNextPageFormat = ">",
+                                    DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+                                    DisplayLinkToLastPage = PagedListDisplayMode.Never
                                     })
                                 </ul>
                             </nav>

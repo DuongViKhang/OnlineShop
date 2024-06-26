@@ -1,0 +1,81 @@
+﻿@model OnlineShop.Models.Voucher
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Chi tiết voucher</h2>
+<p><a class = "btn btn-success" asp-action="Release" asp-route-id="@Model.VoucherId">Phát hành</a> </p>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Tên voucher
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.VoucherName)
+        </dd>
+        <dt>
+            Mô tả
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt>
+            Loại
+        </dt>
+        <dd>
+            @if(Model.DiscountType == "Percent")
+            {
+                @Html.Raw("Theo %")
+            }
+            else if(Model.DiscountType == "Amount")
+            {
+                @Html.Raw("Theo số tiền");
+            }
+        </dd>
+        <dt>
+            Giảm giá
+        </dt>
+        <dd>
+            @if(Model.DiscountType == "Percent")
+            {
+                @Html.Raw(Model.Discount + "%")
+            }
+            else if(Model.DiscountType == "Amount")
+            {
+                @Html.Raw(string.Format("{0:0,0} VNĐ", Model.Discount))
+            }
+        </dd>
+        <dt>
+            Ngày phát hành
+        </dt>
+        <dd>
+            @Html.Raw(Model.ReleaseDate)
+        </dd>
+        <dt>
+            Ngày hết hạn
+        </dt>
+        <dd>
+            @Html.Raw(Model.ExpirationDate)
+        </dd>
+        <dt>
+            Trạng thái
+        </dt>
+        <dd>
+            @if(Model.IsDeleted == 0)
+            {
+                <p>Khả dụng</p>
+            }
+            @if(Model.IsDeleted == 1)
+            {
+                <p>Không khả dụng</p>
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class = "btn btn-primary" asp-action="Edit" asp-route-id="@Model.VoucherId">Chỉnh sửa</a> |
+    <a asp-action="Index">Trở về danh sách</a>
+</div>

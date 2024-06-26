@@ -1,0 +1,83 @@
+﻿@model OnlineShop.Models.Voucher
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+@if (ViewBag.mess != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert">
+        <strong>@ViewBag.mess</strong> 
+    </div>
+}
+<h2>Chỉnh sửa danh mục</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="VoucherId" />
+            <div class="form-group">
+                <label class="control-label">Tên danh mục</label>
+                <input asp-for="VoucherName" class="form-control" />
+                <span asp-validation-for="VoucherName" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Mô tả</label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Loại</label>
+                <select asp-for="DiscountType" class="form-control">
+                    <option value = "Percent">Theo %</option>
+                    <option value = "Amount">Theo số tiền</option>
+                </select>
+                <span asp-validation-for="DiscountType" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Giảm giá</label>
+                <input asp-for="Discount" class="form-control" />
+                <span asp-validation-for="Discount" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Ngày phát hành</label>
+                <input asp-for="ReleaseDate" class="form-control" />
+                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                @if(@ViewBag.checkDate != null) {
+                    <span class="text-danger">@ViewBag.checkDate</span>
+                }
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Ngày hết hạn</label>
+                <input asp-for="ExpirationDate" class="form-control" />
+                <span asp-validation-for="ExpirationDate" class="text-danger"></span>
+                @if(@ViewBag.checkDate != null) {
+                    <span class="text-danger">@ViewBag.checkDate</span>
+                }
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Trạng thái</label>
+                <select asp-for="IsDeleted" class="form-control">
+                    <option value = "0">Khả dụng</option>
+                    <option value = "1">Không khả dụng</option>
+                </select>
+                <span asp-validation-for="IsDeleted" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Lưu" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<div>
+    <a asp-action="Index">Trở về danh sách</a>
+</div>

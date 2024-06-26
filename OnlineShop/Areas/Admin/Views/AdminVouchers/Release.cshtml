@@ -1,0 +1,67 @@
+﻿@model OnlineShop.Models.VoucherItem
+
+@{
+    ViewData["Title"] = "Release";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+@if (ViewBag.mess != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert">
+        <strong>@ViewBag.mess</strong> 
+    </div>
+}
+
+<h2>Phát hành voucher</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Release">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Mã voucher</label>
+                <input readonly asp-for="VoucherId" class="form-control" value="@ViewBag.Voucher.VoucherId"/>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Tên voucher</label>
+                <input readonly class="form-control" value="@ViewBag.Voucher.VoucherName"/>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Mã người dùng được phát hành</label>
+                <select class="form-select" name="option">
+				    <option class="option" value="All" >Tất cả người dùng</option>
+				    @foreach (var customer in ViewBag.Customers)
+				    {
+					    <option class="option" value="@customer.UserId">@customer.UserId - @customer.UserName</option>
+				    }
+			    </select>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Số lượng phát hành</label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label class="control-label">Trạng thái</label>
+                <select asp-for="IsDeleted" class="form-control">
+                    <option value = "0">Khả dụng</option>
+                    <option value = "1">Không khả dụng</option>
+                </select>
+                <span asp-validation-for="IsDeleted" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Thêm" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<div>
+    <a asp-action="Index">Trở về danh sách</a>
+</div>
+
+

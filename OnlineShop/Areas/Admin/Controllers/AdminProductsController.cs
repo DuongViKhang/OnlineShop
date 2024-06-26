@@ -219,6 +219,16 @@ namespace OnlineShop.Areas.Admin.Controllers
                     }
                 }
             }
+            if (product.PromotionalPrice <= 0 || product.Price <= 0)
+            {
+                ViewBag.mess = "Giá khuyến mãi và giá gốc phải lớn hơn 0";
+                return View(product);
+            }
+            if (product.PromotionalPrice >= product.Price)
+            {
+                ViewBag.mess = "Giá khuyến mãi phải thấp hơn giá gốc";
+                return View(product);
+            }
             if (id != product.ProductId)
             {
                 return NotFound();
@@ -226,6 +236,14 @@ namespace OnlineShop.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                if (product.Quantity <= 0)
+                {
+                    product.Quantity = 1;
+                }
+                if (product.Sold < 0)
+                {
+                    product.Sold = 0;
+                }
                 try
                 {
                     product.Image = _context.Products.AsNoTracking().FirstOrDefault(n => n.ProductId == id).Image;

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<OnlineShop.Models.Role>
+﻿@model IEnumerable<OnlineShop.Models.Voucher>
 @using X.PagedList;
 @using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
@@ -17,10 +17,10 @@
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 
-<h2>Quản lý quyền truy cập</h2>
+<h2>Quản lý voucher</h2>
 
 <p>
-    <a class="btn btn-success" asp-area="Admin" asp-controller="AdminRoles" asp-action="Create">Thêm vai trò</a>
+    <a class="btn btn-success" asp-area="Admin" asp-controller="AdminVouchers" asp-action="Create">Thêm voucher</a>
 </p>
 <table class="table">
     <thead>
@@ -29,10 +29,16 @@
                 STT
             </th>
             <th>
-                Tên vai trò
+                Tên voucher
             </th>
             <th>
-                Trạng thái
+                Giảm giá
+            </th>
+             <th>
+                Ngày phát hành
+            </th>
+             <th>
+                Ngày hết hạn
             </th>
             <th></th>
         </tr>
@@ -41,23 +47,33 @@
         @foreach (var item in Model) {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.RoleId)
+                        @Html.DisplayFor(modelItem => item.VoucherId)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.RoleName)
+                        @Html.DisplayFor(modelItem => item.VoucherName)
                     </td>
                     <td>
-                        @if (item.IsDeleted == 0)
+                        @if(item.DiscountType == "Percent")
                         {
-                            <p>Khả dụng</p>
+                            @Html.Raw(item.Discount + "%")
                         }
-                        @if (item.IsDeleted == 1) {
-                            <p>Không khả dụng</p>
+                        else if(item.DiscountType == "Amount")
+                        {
+                           @Html.Raw(string.Format("{0:0,0} VNĐ", item.Discount))
                         }
+
                     </td>
                     <td>
-                        <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminRoles" asp-action="Edit" asp-route-id="@item.RoleId">Chỉnh sửa</a> |
-                        <a class="btn btn-warning" asp-area="Admin" asp-controller="AdminRoles" asp-action="Details" asp-route-id="@item.RoleId">Chi tiết</a> 
+                        @Html.Raw(string.Format("{0:dd/MM/yyyy}", item.ReleaseDate))
+                    </td>
+                    <td>
+                         @Html.Raw(string.Format("{0:dd/MM/yyyy}", item.ExpirationDate))
+                    </td>
+                    <td>
+                        
+                        <a class="btn btn-success" asp-area="Admin" asp-controller="AdminVouchers" asp-action="Release" asp-route-id="@item.VoucherId">Phát hành</a> |
+                        <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminVouchers" asp-action="Edit" asp-route-id="@item.VoucherId">Chỉnh sửa</a> |
+                        <a class="btn btn-warning" asp-area="Admin" asp-controller="AdminVouchers" asp-action="Details" asp-route-id="@item.VoucherId">Chi tiết</a> 
                     </td>
                 </tr>
         }
