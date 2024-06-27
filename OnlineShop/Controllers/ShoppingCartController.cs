@@ -161,7 +161,8 @@ namespace OnlineShop.Controllers
 			ViewBag.quantity = cartItems.Count;
 			ViewBag.cartItems = cartItems;
 			ViewBag.totalCartItems = cartItems.Sum(n => n.Total);
-			return View();
+            
+            return View();
 		}
 
 		[HttpPost, ActionName("Remove")]
@@ -176,8 +177,9 @@ namespace OnlineShop.Controllers
 			await _context.SaveChangesAsync();
 			return RedirectToAction("Index");
 		}
-		public IActionResult OrderCart()
-		{
+		[HttpGet]
+		public IActionResult OrderCart(int? voucherId)
+        {
 			int userId;
 			string roleName = HttpContext.Session.GetString("roleName");
 			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
@@ -203,14 +205,98 @@ namespace OnlineShop.Controllers
 						};
 			List<OrderCartViewModel> cartItems = query.ToList();
 			User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
+			var orderVM = new OrderVIewModel();
 			ViewBag.username = user.UserName;
 			int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
 			ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
 			ViewBag.cartItems = cartItems;
-			ViewBag.totalCartItems = cartItems.Sum(n => n.Total);
-			return View(user);
+			var total = (double?)cartItems.Sum(n => n.Total);
+            
+
+            if (voucherId != null)
+			{
+				var voucherApplied = _context.VoucherItems.Include(v => v.Voucher).FirstOrDefault(v => v.VoucherItemId == voucherId);
+				if (voucherApplied.Voucher.DiscountType.Contains("Percent"))
+				{
+                    var i = voucherApplied.Voucher.Discount/100;
+					total = total - total * i;
+				}
+				else
+				{
+					total = total - voucherApplied.Voucher.Discount;
+				}
+            }
+			ViewBag.totalCartItems = total;
+
+            var vouchers = _context.VoucherItems.Include(v=>v.Voucher).Where(v=>v.UserId==userId && v.IsDeleted!=1).ToList();
+            var list_voucher = new List<VoucherItem>();
+            foreach(var voucher in vouchers)
+            {               
+                if (voucher.Voucher.IsDeleted == 0 && DateTime.Now <= voucher.Voucher.ExpirationDate)
+                {
+                    list_voucher.Add(voucher);
+                }
+            }
+			orderVM.vouchers = vouchers;			
+            ViewBag.vouchers = list_voucher;
+            orderVM.User = user;
+            return View(user);
 		}
-		[HttpPost]
+
+        [HttpPost]
+        public IActionResult ApplyVoucher(int voucherId)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Customer")
+            {
+                return RedirectToAction("Index", "Home", new { area = roleName });
+            }
+            var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+                        join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                        select new OrderCartViewModel
+                        {
+                            CartItemId = s2.CartItemId,
+                            Image = s2.Product.Image,
+                            PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                            ProductName = s2.Product.ProductName,
+                            Count = s2.Count,
+                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                            StyleName = s2.Style.StyleName
+                        };
+            List<OrderCartViewModel> cartItems = query.ToList();
+            User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
+            var orderVM = new OrderVIewModel();
+            ViewBag.username = user.UserName;
+            int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+            ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
+            ViewBag.cartItems = cartItems;
+            var total = (double?)cartItems.Sum(n => n.Total);
+
+
+            if (voucherId != null)
+            {
+                var voucherApplied = _context.VoucherItems.Include(v => v.Voucher).FirstOrDefault(v => v.VoucherItemId == voucherId);
+                if (voucherApplied.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = voucherApplied.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - voucherApplied.Voucher.Discount;
+                }
+            }
+
+            return Json(total);
+        }
+
+        [HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> OrderCart(string receiver, string email, string phone, string address, string paymentOption)
         {
@@ -237,7 +323,17 @@ namespace OnlineShop.Controllers
 				ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
 				ViewBag.cartItems = cartItems;
 				ViewBag.totalCartItems = cartItems.Sum(n => n.Total);
-				return View(user);
+                var vouchers = _context.VoucherItems.Include(v => v.Voucher).Where(v => v.UserId == userId).ToList();
+                var list_voucher = new List<VoucherItem>();
+                foreach (var voucher in vouchers)
+                {
+                    if (voucher.Voucher.IsDeleted == 0 && DateTime.Now <= voucher.Voucher.ExpirationDate)
+                    {
+                        list_voucher.Add(voucher);
+                    }
+                }
+                ViewBag.vouchers = list_voucher;
+                return View(user);
 			}
 			
 
