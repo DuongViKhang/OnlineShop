@@ -66,6 +66,222 @@
                                 <div class="header-right">
                                     <ul>
                                         <li class="dropdown d-none d-md-block">
+                                            @if (HttpContextAccessor.HttpContext.Session.GetString("userId") != null)
+                                            {
+                                            <li class="minicart-wrap me-3 me-lg-0">
+                                                <a onclick="openNoticeModal()" class="minicart-btn toolbar-btn">
+                                                    <i class="pe-7s-info"></i>
+                                                    <span class="quantity" id="noticeQuantitySeen">2</span>
+                                                </a>
+
+                                            </li>
+
+                                            }
+                                           
+                                            
+                                            <!-- The Modal -->
+                                            <div id="myNoticeModal" class="modal">
+                                                <!-- Modal content -->
+                                                <div class="modal-content">
+                                                    <div class="modal-header"> 
+                                                        <span class="modalTitle">Thông báo</span>
+                                                        <span class="close">&times;</span>
+                                                    </div>
+                                                    <div class="noticeContainer" id="noticeContainer">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <style>
+                                                .modal {
+                                                    display: none; /* Hidden by default */
+                                                    position: fixed; /* Stay in place */
+                                                    z-index: 1000; /* Sit on top */
+                                                    left: 0;
+                                                    
+                                                    top: 0;
+                                                    width: 100%; /* Full width */
+                                                    height: 100%; /* Full height */
+                                                    overflow: auto; /* Enable scroll if needed */
+                                                    background-color: rgb(0,0,0); /* Fallback color */
+                                                    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+                                                    align-items: center; /* Center vertically */
+                                                    justify-items: center; /* Center horizontally */
+                                                }
+
+                                            .modalTitle{
+                                                font-size:20px;
+                                                font-weight:bold;
+                                                color:forestgreen
+                                            }
+                                                /* Modal Content/Box */
+                                                .modal-content {
+                                                    background-color: #fefefe;
+                                                    
+                                                    padding: 20px;
+                                                    border: 1px solid #888;
+                                                    width: 80%; /* Could be more or less, depending on screen size */
+                                                }
+
+                                                /* The Close Button */
+                                                .close {
+                                                    color: #aaa;
+                                                    float: right;
+                                                    font-size: 28px;
+                                                    font-weight: bold;
+                                                }
+
+                                                    .close:hover,
+                                                    .close:focus {
+                                                        color: black;
+                                                        text-decoration: none;
+                                                        cursor: pointer;
+                                                    }
+
+                                                .noticeContainer {
+                                                    width:100%;
+                                                }
+                                                .divElement {
+                                                    padding-left:20px;
+                                                    border: 1px solid #888;
+                       
+                                                }
+
+                                                .divElement:hover,
+                                                .divElement:focus {
+                                                text-decoration: none;
+                                                cursor: pointer;
+                                                .notice {
+
+                                                }
+
+                                                    .notice:hover,
+                                                    .notice:focus {
+                                                    
+                                                    text-decoration: none;
+                                                    cursor: pointer;
+                                                }
+                                            </style>
+                                        <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+                                            <script>
+
+                                            var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+
+                                            connection.start().then(function () {
+                                                console.log("SignalR connected");
+                                            }).catch(function (err) {
+                                                return console.error(err.toString());
+                                            });
+                                            connection.on("SignalNotice", () => {
+                                                getNoticeData();
+                                            });
+
+                                                getNoticeData();
+                                                // Get the modal
+                                                var modal = document.getElementById("myNoticeModal");
+
+                                                
+
+                                                // Get the <span> element that closes the modal
+                                                var span = document.getElementsByClassName("close")[0];
+
+                                                function getNoticeData(){
+                                                    var userId = @HttpContextAccessor.HttpContext.Session.GetString("userId");
+                                                $.ajax({
+                                                    url: `/api/Firebase/GetNotices/${userId}`, // Thay đổi URL thành URL của API
+                                                    type: 'GET',
+                                                    success: function (data) {
+                                                        var quantity = document.getElementById('noticeQuantitySeen')
+                                                        var size = 0;
+                                                        var noticeContainer = document.getElementById('noticeContainer');
+                                                        noticeContainer.innerHTML = "";
+                                                        Object.values(data).forEach(function (item) {
+                                                            //var noticeObj = JSON.parse(item);
+                                                            //console.log(item.seen);
+                                                            createNoticeElement(item);
+                                                            if (!item.seen) {
+                                                                size++;
+                                                            }
+
+                                                        });
+                                                        quantity.textContent = size;
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        console.log(error);
+                                                    }
+                                                });
+                                                }
+
+                                                function openNoticeModal() {
+                                                    
+
+                                                    modal.style.display = "block";
+
+                                                    
+                                                }
+
+                                          
+
+                                                // When the user clicks on <span> (x), close the modal
+                                                span.onclick = function () {
+                                                document.getElementById('global-overlay').className = "global-overlay";
+                                                    modal.style.display = "none";
+                                                   
+                                                }
+
+                                                // When the user clicks anywhere outside of the modal, close it
+                                                window.onclick = function (event) {
+                                                    if (event.target == modal) {
+                                                        modal.style.display = "none";
+                                                    }
+                                                }
+
+                                                function createNoticeElement(notice) {
+                                                    var noticeContainer = document.getElementById('noticeContainer');
+                                                    var divElement = document.createElement('div');
+                                                    
+                                                    var noticeElement = document.createElement('p');
+                                                    var date = document.createElement('p');
+                                                    noticeElement.textContent = notice.message;
+                                                    date.textContent = removeTFromDateTime(notice.sendDate);
+                                                    if (!notice.seen) {
+                                                        noticeElement.style = "font-weight: bold;"
+                                                    }else{
+                                                        noticeElement.style = "font-style: normal;"
+                                                } 
+                                                divElement.className = 'divElement';
+                                                divElement.onclick = function () {
+                                                    seenNotice(notice.id);
+
+                                                    getNoticeData();
+                                                };
+                                                    divElement.appendChild(date);
+                                                    divElement.appendChild(noticeElement);                                                
+                                                    noticeContainer.appendChild(divElement);
+                                                }
+
+                                                function seenNotice(noticeId){
+                                                var userId = @HttpContextAccessor.HttpContext.Session.GetString("userId");
+                                                    $.ajax({
+                                                        url: "/api/Firebase/UpdateSeen",
+                                                        type: "PUT",
+                                                        contentType: 'application/json',
+                                                        data: JSON.stringify({
+                                                            userId: ''+userId,
+                                                            noticeId: noticeId
+                                                        }),
+                                                        success: function (response) {
+                                                            console.log("Notice updated successfully:", response);
+                                                        },
+                                                        error: function (xhr, status, error) {
+                                                            console.error("Failed to update notice:", xhr.responseText);
+                                                        }
+                                                    });
+                                                }
+                                            function removeTFromDateTime(dateTimeStr) {
+                                                return dateTimeStr.replace('T', ' ');
+                                            }
+                                            </script>
                                             @if (ViewBag.username != null)
                                             {
                                                 <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
@@ -107,8 +323,10 @@
                                                     <i class="pe-7s-shopbag"></i>
                                                     <span class="quantity">@ViewBag.quantity</span>
                                                 </a>
+
                                             </li>
                                         }
+                                        
                                         <li class="mobile-menu_wrap d-block d-lg-none">
                                             
                                         </li>
@@ -140,9 +358,9 @@
                                                     List<string> categories = HttpContextAccessor.HttpContext.Session.GetString("categories").Split(',').ToList();
                                                 foreach (var category in categories)
                                                 {
-                                                    <li class="drop-holder">
-                                                            <a asp-controller="Product" asp-action="Index" asp-route-categoryName="@category">@category</a>
-                                                    </li>
+                                                                                        <li class="drop-holder">
+                                                                                                <a asp-controller="Product" asp-action="Index" asp-route-categoryName="@category">@category</a>
+                                                                                        </li>
                                                 }                                                    
                                                 }
                                             }
@@ -521,7 +739,7 @@
                     </div>
                 </div>
             </div>
-            <div class="global-overlay"></div>
+            <div id="global-overlay" class="global-overlay"></div>
         </header>
         <!-- Main Header Area End Here -->
 

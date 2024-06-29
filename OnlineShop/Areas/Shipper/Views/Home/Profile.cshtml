@@ -1,0 +1,151 @@
+﻿@model OnlineShop.Models.User
+@{
+    ViewData["Title"] = "Thông tin tài khoản";
+    Layout = "~/Areas/Shipper/Views/Shared/_ShipperLayout.cshtml";
+}
+@if (ViewBag.mess != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;">
+        <strong>Chỉnh sửa thông tin tài khoản thất bại!</strong> @ViewBag.mess
+    </div>
+}
+<div class="main-wrapper">
+    <style>
+        .main-content {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .imageAvatar{
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+        }
+        .account-page-area {
+            margin-top: 20px;
+        }
+
+        .myaccount-details {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        .myaccount-form-inner {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .single-input {
+            margin-bottom: 20px;
+        }
+
+            .single-input label {
+                font-weight: bold;
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .single-input input[type="text"],
+            .single-input input[type="tel"],
+            .single-input input[type="file"] {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+            }
+
+            .single-input button {
+                background-color: #007bff;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+                .single-input button:hover {
+                    background-color: #0056b3;
+                }
+
+        .alert {
+            margin-bottom: 20px;
+        }
+    </style>
+    <!-- Begin Main Content Area -->
+    <main class="main-content">
+        <div class="account-page-area section-space-y-axis-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="tab-pane fade show active" id="account-details" role="tabpanel" aria-labelledby="account-details-tab">
+                            <div class="myaccount-details">
+                                <div style="width:auto;padding-left:250px">
+                                    <img src="~/upload/images/avatars/customer/@Model.Avatar"
+                                        class="imageAvatar"
+                                          alt="@Model.UserName" />
+                                </div>
+                                <form asp-action="Profile" asp-controller="Home" class="myaccount-form" enctype="multipart/form-data" method="post">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="UserId" />
+                                    <input type="hidden" asp-for="Email" />
+                                    <input type="hidden" asp-for="IsEmailActive" />
+                                    <input type="hidden" asp-for="Password" />
+                                    <input type="hidden" asp-for="RoleId" />
+                                    <input type="hidden" asp-for="Date" />
+                                    <input type="hidden" asp-for="IsDeleted" />
+                                    <div class="myaccount-form-inner">
+                                        <div class="single-input">
+                                            <label>
+                                                Họ tên
+                                            </label>
+                                            <input type="text" asp-for="UserName" value="@Model.UserName">
+                                        </div>
+                                        <div class="single-input">
+                                            <label>
+                                                ID
+                                            </label>
+                                            <input type="text" asp-for="IdCard" value="@Model.IdCard">
+                                        </div>
+                                        <div class="single-input">
+                                            <label>
+                                                Số điện thoại
+                                            </label>
+                                            <input type="tel" asp-for="Phone" value="@Model.Phone">
+                                        </div>
+                                        <div class="single-input">
+                                            <label>
+                                                Địa chỉ
+                                            </label>
+                                            <input type="text" asp-for="Address" value="@Model.Address">
+                                        </div>
+                                        <div class="single-input">
+                                            <label class="control-label">Ảnh đại diện</label>
+                                            <input asp-for="Avatar" class="form-control" type="hidden" />
+                                        </div>
+                                        <input id="Avatar" name="Avatar" class="form-control" type="file" />
+                                        <div class="single-input">
+                                            <button class="btn btn-custom-size lg-size btn-secondary btn-primary-hover rounded-0" type="submit">
+                                                <span>Lưu thay đổi</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+        </main>
+<!-- Main Content Area End Here -->
+<!-- Begin Scroll To Top -->
+<a class="scroll-to-top" href="">
+    <i class="fa fa-chevron-up"></i>
+</a>
+<!-- Scroll To Top End Here -->
+    </div>

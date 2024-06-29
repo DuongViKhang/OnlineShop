@@ -21,8 +21,10 @@ namespace OnlineShop.Hubs
         {
             // Lưu trữ kết nối khi người dùng kết nối
             var userId = _httpContextAccessor.HttpContext.Session.GetString("userId");
-            var connectionId = Context.ConnectionId;
-            _connections[userId] = connectionId;
+            if(userId != null) {
+                var connectionId = Context.ConnectionId;
+                _connections[userId] = connectionId;
+            }
 
             return base.OnConnectedAsync();
         }
@@ -108,5 +110,18 @@ namespace OnlineShop.Hubs
            
 		}
 
-	}
+
+        public async Task Notice(string userId)
+
+        {
+            if (_connections.ContainsKey(userId))
+            {
+                var connectionId = _connections[userId];
+                await Clients.Client(connectionId).SendAsync("SignalNotice");
+
+            }
+
+        }
+
+    }
 }

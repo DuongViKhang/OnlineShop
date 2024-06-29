@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
+using static OnlineShop.Controllers.FirebaseController;
 
 namespace OnlineShop.Controllers
 {
@@ -243,6 +244,162 @@ namespace OnlineShop.Controllers
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
+
+		public class NoticeSend
+		{
+			public String receivedId { get; set; }
+			public String content { get; set; }
+
+        }
+        public class UpdateSeen
+        {
+            public String userId { get; set; }
+            public String noticeId { get; set; }
+
+        }
+
+        public class NoticeData
+        {
+            public String id { get; set; }
+            public String message { get; set; }
+            public Boolean seen { get; set; }
+            public String url { get; set; }
+            public String sendDate { get; set; }
+
+        }
+        public class Body
+        {
+            public String name { get; set; }
+
+        }
+
+        [HttpPost("PushNotice")]
+        public async Task<IActionResult> PushNoticeToFirebase([FromBody] NoticeSend notice)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string nodeNotice = $"notices/customerId_{notice.receivedId}";
+                var noticeData = new
+                {
+                    message = notice.content,
+                    seen = false,
+                };
+
+                PushResponse response = await _client.PushAsync(nodeNotice, noticeData);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+					var body = JsonConvert.DeserializeObject<Body>(response.Body.ToString());
+                    string nodeNoticeUpdate = $"notices/customerId_{notice.receivedId}/{body.name}";
+					var noticeDataUpdate = new
+					{
+						id = body.name,
+                        message = notice.content,
+                        seen = false,
+                        sendDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    };
+                    await _client.SetAsync(nodeNoticeUpdate, noticeDataUpdate);
+                    return Ok("Notice created successfully");
+                }
+                else
+                {
+                    return BadRequest("Failed to create chat. Status code: " + response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+
+        [HttpGet("GetNotices/{userId}")]
+        public async Task<IActionResult> GetNoticesFromFirebase(int userId)
+        {
+            try
+            {
+                // Create the path to the notices node
+                string nodeNotice = $"notices/customerId_{userId}";
+
+                // Query data from Firebase
+                FirebaseResponse response = await _client.GetAsync(nodeNotice);
+
+                // Check if the response contains data
+                if (response.Body != "null")
+                {
+                    // Convert the response data to a dictionary
+                    Dictionary<string, NoticeData> noticesDict = JsonConvert.DeserializeObject<Dictionary<string, NoticeData>>(response.Body);
+                    List<NoticeData> noticeList = new List<NoticeData>();
+
+                    // Loop through each key-value pair in the dictionary
+                    foreach (var pair in noticesDict)
+                    {
+                        var noticeData = pair.Value;
+                        noticeData.id = pair.Key; // Assign the key as the id
+                       
+                        noticeList.Add(noticeData);
+                    }
+
+                    return Ok(noticeList);
+                }
+                else
+                {
+                    return NotFound("No notices found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+        [HttpPut("UpdateSeen")]
+        public async Task<IActionResult> UpdateSeenFromFirebase([FromBody] UpdateSeen updateSeen)
+        {
+            try
+            {
+                // Create the path to the notices node
+                string nodeNotice = $"notices/customerId_{updateSeen.userId}";
+
+                // Query data from Firebase
+                FirebaseResponse response = await _client.GetAsync(nodeNotice);
+
+                // Check if the response contains data
+                if (response.Body != "null")
+                {
+                    // Convert the response data to a dictionary
+                    Dictionary<string, NoticeData> noticesDict = JsonConvert.DeserializeObject<Dictionary<string, NoticeData>>(response.Body);
+
+                    // Loop through each key-value pair in the dictionary
+                    foreach (var pair in noticesDict)
+                    {
+                        if (pair.Key.Contains(updateSeen.noticeId))
+                        {                                
+                            var noticeData = pair.Value;
+                            noticeData.id = pair.Key;
+                            noticeData.seen = true;
+                            string nodeNoticeUpdate = $"notices/customerId_{updateSeen.userId}/{updateSeen.noticeId}";
+                            await _client.SetAsync(nodeNoticeUpdate, noticeData);
+                        }
+                    }
+
+                    return Ok();
+                }
+                else
+                {
+                    return NotFound("No notices found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
         private string ExtractUserId(string inputString)
 		{
 			string[] parts = inputString.Split('_');

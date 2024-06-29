@@ -52,7 +52,7 @@
             {
                 <td>
                     <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a> |
-                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.OrderId">Xác nhận</a> |
+                        <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.OrderId">Xác nhận</a> |
                     <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.OrderId">Hủy</a>
                 </td>
             }
@@ -79,3 +79,4 @@ new PagedListRenderOptions {
         DisplayLinkToFirstPage = PagedListDisplayMode.Never,
         DisplayLinkToLastPage = PagedListDisplayMode.Never
 })
+
