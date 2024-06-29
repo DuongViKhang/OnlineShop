@@ -68,10 +68,10 @@ namespace OnlineShop.Areas.Seller.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(m => m.UserId == id);
+                .FirstOrDefaultAsync(m => m.UserId == id && m.SellerId == userId);
             if (user == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             return View(user);
@@ -191,10 +191,10 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.FirstOrDefaultAsync(m => m.UserId == id && m.SellerId == userId);
             if (user == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
             return View(user);
         }
@@ -305,10 +305,10 @@ namespace OnlineShop.Areas.Seller.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(m => m.UserId == id);
+                .FirstOrDefaultAsync(m => m.UserId == id && m.SellerId == userId);
             if (user == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             return View(user);

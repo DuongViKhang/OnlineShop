@@ -50,20 +50,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Role.RoleName)
                 </td>
-                @if (item.RoleId == 4)
-                {
-                    <td>
-                        <a class="btn btn-primary" asp-area="Seller" asp-controller="Shipper" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> |
-                        <a class="btn btn-warning" asp-area="Seller" asp-controller="Shipper" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a>
-                    </td>
-                }
-                @if (item.RoleId == 1)
-                {
-                    <td>
-                        <a class="btn btn-primary" asp-area="Seller" asp-controller="Shipper" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a>
-                        <a class="btn btn-warning" asp-area="Seller" asp-controller="Shipper" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a>
-                    </td>
-                }
+                <td>
+                    <a class="btn btn-primary" asp-area="Seller" asp-controller="Shipper" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> 
+                </td>
             </tr>
         }
     </tbody>

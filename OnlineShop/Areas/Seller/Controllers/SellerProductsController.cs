@@ -68,13 +68,12 @@ namespace OnlineShop.Areas.Seller.Controllers
             var product = await _context.Products
                 .Where(p => p.SellerId == userId)
                 .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.ProductId == id);
-            ViewBag.style = _context.Styles.Where(n => n.ProductId == product.ProductId).ToList();
+                .FirstOrDefaultAsync(m => m.ProductId == id && m.SellerId == userId);
             if (product == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
-
+            ViewBag.style = _context.Styles.Where(n => n.ProductId == product.ProductId).ToList();
             return View(product);
         }
 
@@ -188,10 +187,13 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .Where(p => p.SellerId == userId)
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(m => m.ProductId == id && m.SellerId == userId);
             if (product == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
             return View(product);
@@ -284,11 +286,12 @@ namespace OnlineShop.Areas.Seller.Controllers
             }
 
             var product = await _context.Products
+                .Where(p => p.SellerId == userId)
                 .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.ProductId == id);
+                .FirstOrDefaultAsync(m => m.ProductId == id && m.SellerId == userId);
             if (product == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             return View(product);
@@ -313,7 +316,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult AddStyle(int id)
+        public async Task<IActionResult> AddStyleAsync(int id)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -325,6 +328,14 @@ namespace OnlineShop.Areas.Seller.Controllers
             if (roleName != "Seller")
             {
                 return RedirectToAction("Index", "Home", new { area = roleName });
+            }
+            var product = await _context.Products
+                .Where(p => p.SellerId == userId)
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(m => m.ProductId == id && m.SellerId == userId);
+            if (product == null)
+            {
+                return RedirectToAction(nameof(Index));
             }
             ViewBag.productId = id;
             return View();
@@ -397,10 +408,10 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return NotFound();
             }
 
-            var style = await _context.Styles.FindAsync(id);
+            var style = _context.Styles.FirstOrDefault(m => m.StyleId == id && m.Product.SellerId == userId);
             if (style == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
             return View(style);
         }

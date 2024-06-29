@@ -68,10 +68,10 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+                .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
             if (order == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
             var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id && s1.Product.SellerId == userId)
                         select new OrderCartViewModel
@@ -148,10 +148,10 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+                .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
             if (order == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
             var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
                         select new OrderCartViewModel
@@ -203,10 +203,10 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+                .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
             if (order == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
             var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
                         select new OrderCartViewModel
@@ -263,10 +263,10 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+                .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
             if (order == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
             var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
                         select new OrderCartViewModel

@@ -12,5 +12,6 @@ namespace OnlineShop.Models
         public string StyleName { get; set; }
         public string Image { get; set; }
         public int IsDeleted { get; set; }
+        public virtual Product Product { get; set; }
     }
 }
