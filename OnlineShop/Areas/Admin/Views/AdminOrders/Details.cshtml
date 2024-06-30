@@ -75,6 +75,21 @@
             @Html.DisplayFor(model => model.Status.StatusName)
         </dd>
         <dt>
+            Voucher áp dụng
+        </dt>
+        @if (Model.VoucherId > 0)
+        {
+            <dd>
+                @Html.DisplayFor(model => model.Voucher.VoucherName)
+            </dd>
+        }
+        else
+        {
+            <dd>
+                Không có
+            </dd>
+        }
+        <dt>
             Sản phẩm
         </dt>
         <dd>

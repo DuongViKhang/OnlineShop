@@ -68,8 +68,12 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
-                .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
-            if (order == null)
+                .Include(o => o.Voucher)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
+            if (order == null || 
+                !_context.OrderItems
+                .Include(n => n.Product)
+                .Where(n => n.OrderId == id && n.Product.SellerId == userId).Any())
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -81,7 +85,20 @@ namespace OnlineShop.Areas.Seller.Controllers
                             Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                         };
             List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.total = lst.Sum(n => n.Total);
+            var total = (double?)lst.Sum(n => n.Total);
+            if (order.VoucherId > 0)
+            {
+                if (order.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = order.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - order.Voucher.Discount;
+                }
+            }
+            ViewBag.total = total;
             ViewBag.lst = lst;
             return View(order);
         }
@@ -148,8 +165,12 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
-            if (order == null)
+            if (order == null ||
+                !_context.OrderItems
+                .Include(n => n.Product)
+                .Where(n => n.OrderId == id && n.Product.SellerId == userId).Any())
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -161,7 +182,20 @@ namespace OnlineShop.Areas.Seller.Controllers
                             Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                         };
             List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.total = lst.Sum(n => n.Total);
+            var total = (double?)lst.Sum(n => n.Total);
+            if (order.VoucherId > 0)
+            {
+                if (order.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = order.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - order.Voucher.Discount;
+                }
+            }
+            ViewBag.total = total;
             ViewBag.lst = lst;
             return View(order);
         }
@@ -203,8 +237,12 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
-            if (order == null)
+            if (order == null ||
+                !_context.OrderItems
+                .Include(n => n.Product)
+                .Where(n => n.OrderId == id && n.Product.SellerId == userId).Any())
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -216,7 +254,20 @@ namespace OnlineShop.Areas.Seller.Controllers
                             Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                         };
             List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.total = lst.Sum(n => n.Total);
+            var total = (double?)lst.Sum(n => n.Total);
+            if (order.VoucherId > 0)
+            {
+                if (order.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = order.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - order.Voucher.Discount;
+                }
+            }
+            ViewBag.total = total;
             ViewBag.lst = lst;
             return View(order);
         }
@@ -263,8 +314,12 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
-            if (order == null)
+            if (order == null ||
+                !_context.OrderItems
+                .Include(n => n.Product)
+                .Where(n => n.OrderId == id && n.Product.SellerId == userId).Any())
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -276,7 +331,20 @@ namespace OnlineShop.Areas.Seller.Controllers
                             Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                         };
             List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.total = lst.Sum(n => n.Total);
+            var total = (double?)lst.Sum(n => n.Total);
+            if (order.VoucherId > 0)
+            {
+                if (order.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = order.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - order.Voucher.Discount;
+                }
+            }
+            ViewBag.total = total;
             ViewBag.lst = lst;
             return View(order);
         }

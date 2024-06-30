@@ -64,6 +64,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
@@ -77,7 +78,20 @@ namespace OnlineShop.Areas.Admin.Controllers
                             Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                         };
             List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.total = lst.Sum(n => n.Total);
+            var total = (double?)lst.Sum(n => n.Total);
+            if (order.VoucherId > 0)
+            {
+                if (order.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = order.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - order.Voucher.Discount;
+                }
+            }
+            ViewBag.total = total;
             ViewBag.lst = lst;
             return View(order);
         }
@@ -143,6 +157,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
@@ -156,7 +171,20 @@ namespace OnlineShop.Areas.Admin.Controllers
                             Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                         };
             List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.total = lst.Sum(n => n.Total);
+            var total = (double?)lst.Sum(n => n.Total);
+            if (order.VoucherId > 0)
+            {
+                if (order.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = order.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - order.Voucher.Discount;
+                }
+            }
+            ViewBag.total = total;
             ViewBag.lst = lst;
             return View(order);
         }
@@ -198,6 +226,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
@@ -211,7 +240,20 @@ namespace OnlineShop.Areas.Admin.Controllers
                             Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                         };
             List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.total = lst.Sum(n => n.Total);
+            var total = (double?)lst.Sum(n => n.Total);
+            if (order.VoucherId > 0)
+            {
+                if (order.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = order.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - order.Voucher.Discount;
+                }
+            }
+            ViewBag.total = total;
             ViewBag.lst = lst;
             return View(order);
         }
@@ -258,6 +300,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
@@ -271,7 +314,20 @@ namespace OnlineShop.Areas.Admin.Controllers
                             Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                         };
             List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.total = lst.Sum(n => n.Total);
+            var total = (double?)lst.Sum(n => n.Total);
+            if (order.VoucherId > 0)
+            {
+                if (order.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = order.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - order.Voucher.Discount;
+                }
+            }
+            ViewBag.total = total;
             ViewBag.lst = lst;
             return View(order);
         }
