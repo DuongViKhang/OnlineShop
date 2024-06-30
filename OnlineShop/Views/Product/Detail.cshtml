@@ -48,10 +48,25 @@
                                                 <span class="title">Danh mục :</span>
                                                 <ul>
                                                     <li>
-                                                        <h6><a asp-controller="Product" asp-action="Index" asp-route-categoryName="@Model.Category.CategoryName">@Model.Category.CategoryName</a></h6>
+                                                        <h4><a asp-controller="Product" asp-action="Index" asp-route-categoryName="@Model.Category.CategoryName">@Model.Category.CategoryName</a></h4>
                                                     </li>
                                                 </ul>
                                             </div>
+                                            @if(Model.Quantity > 0) {
+                                                <ul>
+                                                    <li>
+                                                        <p style="padding-right:17px;">Tình trạng: Còn hàng</p>
+                                                    </li>
+                                                </ul>
+                                            }
+                                            else
+                                            {
+                                                <ul>
+                                                    <li>
+                                                        <p style="padding-right:17px;">Tình trạng: Hết hàng</p>
+                                                    </li>
+                                                </ul>
+                                            }
                                             <ul>
                                                 <li>
                                                     <p style="padding-right:17px;">Số lượng trong kho: @Model.Quantity</p>
