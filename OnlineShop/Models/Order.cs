@@ -18,6 +18,7 @@ namespace OnlineShop.Models
         public int? ShipperId { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
+        public int VoucherId { get; set; }
         public int StatusId { get; set; }
         public int IsPay { get; set; }
         public string Email { get; set; }
@@ -26,6 +27,7 @@ namespace OnlineShop.Models
 
         public virtual StatusOrder Status { get; set; }
         public virtual User User { get; set; }
+        public virtual Voucher Voucher { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
     }
 }
