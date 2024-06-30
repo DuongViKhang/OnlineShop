@@ -14,6 +14,9 @@ using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 using OnlineShop.Payment;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using MailKit.Search;
+using Microsoft.CodeAnalysis;
+using System.Drawing;
 
 namespace OnlineShop.Controllers
 {
@@ -200,11 +203,57 @@ namespace OnlineShop.Controllers
             ViewBag.Count = quantity;
             ViewBag.Total = product.PromotionalPrice * quantity;
             ViewBag.Style = _context.Styles.FirstOrDefault(n => n.StyleId == styleId);
+            var vouchers = _context.VoucherItems.Include(v => v.Voucher).Where(v => v.UserId == userId && v.IsDeleted != 1).ToList();
+            var list_voucher = new List<VoucherItem>();
+            foreach (var voucher in vouchers)
+            {
+                if (voucher.Voucher.IsDeleted == 0 && DateTime.Now <= voucher.Voucher.ExpirationDate)
+                {
+                    list_voucher.Add(voucher);
+                }
+            }
+            ViewBag.vouchers = list_voucher;
             return View(user);
 		}
-		[HttpPost]
+        [HttpPost]
+        public IActionResult ApplyVoucher(int voucherId, int productId, int quantity)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Customer")
+            {
+                return RedirectToAction("Index", "Home", new { area = roleName });
+            }
+            User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
+            Product product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
+            var total = (double?)product.PromotionalPrice * quantity;
+
+
+
+            if (voucherId != null)
+            {
+                var voucherApplied = _context.VoucherItems.Include(v => v.Voucher).FirstOrDefault(v => v.VoucherItemId == voucherId);
+                if (voucherApplied.Voucher.DiscountType.Contains("Percent"))
+                {
+                    var i = voucherApplied.Voucher.Discount / 100;
+                    total = total - total * i;
+                }
+                else
+                {
+                    total = total - voucherApplied.Voucher.Discount;
+                }
+            }
+
+            return Json(total);
+        }
+        [HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> OrderProduct(string receiver, string email, string phone, string address, int productId, int count, string paymentOption, int styleId)
+		public async Task<IActionResult> OrderProduct(string receiver, string email, string phone, string address, int productId, int count, string paymentOption, int styleId, int voucherSelected)
 		{
             int userId = int.Parse(HttpContext.Session.GetString("userId"));
             if (receiver == null || email == null | phone == null || address == null)
@@ -236,6 +285,16 @@ namespace OnlineShop.Controllers
                 ViewBag.Count = count;
                 ViewBag.Total = product.PromotionalPrice * count;
                 ViewBag.Style = _context.Styles.FirstOrDefault(n => n.StyleId == styleId);
+                var vouchers = _context.VoucherItems.Include(v => v.Voucher).Where(v => v.UserId == userId).ToList();
+                var list_voucher = new List<VoucherItem>();
+                foreach (var voucher in vouchers)
+                {
+                    if (voucher.Voucher.IsDeleted == 0 && DateTime.Now <= voucher.Voucher.ExpirationDate)
+                    {
+                        list_voucher.Add(voucher);
+                    }
+                }
+                ViewBag.vouchers = list_voucher;
                 return View(user);
             }
             Order order = new Order
@@ -248,6 +307,7 @@ namespace OnlineShop.Controllers
 				StatusId = 1,
 				IsPay = 0,
 				Date = DateTime.Now,
+                VoucherId = voucherSelected,
 				IsDeleted = 0
 			};
             _context.Orders.Add(order);
@@ -270,18 +330,36 @@ namespace OnlineShop.Controllers
             }
             else
             {   
-                var url = URLPayment(int.Parse(paymentOption), newOrderId);
+                var url = URLPayment(int.Parse(paymentOption), newOrderId, voucherSelected);
                 return Redirect(url);
             }
         }
-        public string URLPayment(int TypePaymentVN, int orderId)
+        public string URLPayment(int TypePaymentVN, int orderId, int voucherSelected)
         {
             var urlPayment = "";
             var order = _context.Orders.FirstOrDefault(x => x.OrderId == orderId);
-            var totalAmount = _context.Orders
+            var totalAmount = (double?)_context.Orders
            .Where(o => o.OrderId == order.OrderId)
            .SelectMany(o => o.OrderItems)
            .Sum(oi => oi.Count * oi.Product.PromotionalPrice);
+
+
+            if(voucherSelected > 0) 
+            { 
+                var voucher = _context.VoucherItems.Include(o => o.Voucher).FirstOrDefault(v=>v.VoucherId==voucherSelected);
+                if(voucher != null)
+                {
+                    if (voucher.Voucher.DiscountType == "Percent")
+                    {
+                        totalAmount = totalAmount - totalAmount * voucher.Voucher.Discount/100;
+
+                    }
+                    else if(voucher.Voucher.DiscountType == "Amount")
+                    {
+                        totalAmount = totalAmount - voucher.Voucher.Discount;
+                    }
+                }
+            }
             //Get Config Info
             string vnp_Returnurl = _configuration["VnpSettings:ReturnUrl"]; //URL nhan ket qua tra ve 
             string vnp_Url = _configuration["VnpSettings:Url"]; //URL thanh toan cua VNPAY 

@@ -298,7 +298,7 @@ namespace OnlineShop.Controllers
 
         [HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> OrderCart(string receiver, string email, string phone, string address, string paymentOption)
+		public async Task<IActionResult> OrderCart(string receiver, string email, string phone, string address, string paymentOption, int voucherSelected)
         {
 			int userId = int.Parse(HttpContext.Session.GetString("userId"));
             if (receiver == null || email == null | phone == null || address == null)
@@ -350,6 +350,7 @@ namespace OnlineShop.Controllers
                     ShipperId = 1,
                     IsPay = 0,
                     Date = DateTime.Now,
+                    VoucherId=voucherSelected,
                     IsDeleted = 0
                 };
                 _context.Orders.Add(order);
@@ -377,7 +378,8 @@ namespace OnlineShop.Controllers
                 HttpContext.Session.SetString("receiverEmail", email);
                 HttpContext.Session.SetString("receiverPhone", phone);
                 HttpContext.Session.SetString("receiverAddress", address);
-                var url = URLPayment(int.Parse(paymentOption));
+                HttpContext.Session.SetString("receiverVoucher", Convert.ToString(voucherSelected));
+                var url = URLPayment(int.Parse(paymentOption), voucherSelected);
                 return Redirect(url);
 			}
 		}
@@ -442,6 +444,8 @@ namespace OnlineShop.Controllers
 
 				string address = HttpContext.Session.GetString("receiverAddress");
 
+                int voucherId = Convert.ToInt32(HttpContext.Session.GetString("receiverVoucher"));
+
                 bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, vnp_HashSecret);
                 if (checkSignature)
                 {
@@ -461,6 +465,7 @@ namespace OnlineShop.Controllers
                                 StatusId = 1,
                                 ShipperId = 1,
                                 IsPay = 1,
+                                VoucherId = voucherId,
                                 Date = DateTime.Now,
                                 IsDeleted = 0
                             };
@@ -489,6 +494,7 @@ namespace OnlineShop.Controllers
                         //Thanh toan khong thanh cong. Ma loi: vnp_ResponseCode
                         ViewBag.InnerText = "Có lỗi xảy ra trong quá trình xử lý.Mã lỗi: " + vnp_ResponseCode;
                         //log.InfoFormat("Thanh toan loi, OrderId={0}, VNPAY TranId={1},ResponseCode={2}", orderId, vnpayTranId, vnp_ResponseCode);
+                        return View();
                     }
                     //displayTmnCode.InnerText = "Mã Website (Terminal ID):" + TerminalID;
                     //displayTxnRef.InnerText = "Mã giao dịch thanh toán:" + orderId.ToString();
@@ -501,7 +507,7 @@ namespace OnlineShop.Controllers
             return View();
         }
 
-        public string URLPayment(int TypePaymentVN)
+        public string URLPayment(int TypePaymentVN, int voucherSelected)
 		{
             var urlPayment = "";
             int userId;
@@ -522,7 +528,23 @@ namespace OnlineShop.Controllers
 						};
             List<OrderCartViewModel> lst = query.ToList();
 
-            var totalAmount = Convert.ToDouble(lst.Sum(n => n.Total));
+            var totalAmount = (double?)Convert.ToDouble(lst.Sum(n => n.Total));
+            if (voucherSelected > 0)
+            {
+                var voucher = _context.VoucherItems.Include(o => o.Voucher).FirstOrDefault(v => v.VoucherId == voucherSelected);
+                if (voucher != null)
+                {
+                    if (voucher.Voucher.DiscountType == "Percent")
+                    {
+                        totalAmount = totalAmount - totalAmount * voucher.Voucher.Discount/100;
+
+                    }
+                    else if (voucher.Voucher.DiscountType == "Amount")
+                    {
+                        totalAmount = totalAmount - voucher.Voucher.Discount;
+                    }
+                }
+            }
             //Get Config Info
             string vnp_Returnurl = _configuration["VnpSettings:ReturnUrl"]; //URL nhan ket qua tra ve 
             string vnp_Url = _configuration["VnpSettings:Url"]; //URL thanh toan cua VNPAY 
