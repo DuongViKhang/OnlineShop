@@ -27,6 +27,7 @@
                                         <th>Ngày đặt</th>
                                         <th>Tình trạng đơn hàng</th>
                                         <th>Sản phẩm</th>
+                                        <th>Voucher</th>
                                         <th>Tổng đơn hàng</th>
                                     </tr>
                                         <tr>
@@ -68,7 +69,7 @@
                                                
                                             }
                                         </td>
-                                        
+                                        <td>@Model.Voucher.VoucherName</td>
                                         <td>@ViewBag.total.ToString("#,##0") VNĐ</td>
                                         </tr>
                                 </tbody>

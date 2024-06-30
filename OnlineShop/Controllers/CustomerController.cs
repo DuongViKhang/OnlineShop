@@ -463,7 +463,7 @@ namespace OnlineShop.Controllers
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             try
             {
-                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
+                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).Include(o=>o.Voucher).FirstOrDefault();
                 if (order.UserId != userId || order == null)
                 {
                     return RedirectToAction("Orders", "Customer");
@@ -478,7 +478,20 @@ namespace OnlineShop.Controllers
                                 StyleName = s1.Style.StyleName
                             };
                 List<OrderCartViewModel> lst = query.ToList();
-                ViewBag.total = lst.Sum(n => n.Total);
+                var total = (double?) lst.Sum(n => n.Total);
+                if(order.VoucherId > 0)
+                {
+                        if (order.Voucher.DiscountType.Contains("Percent"))
+                        {
+                            var i = order.Voucher.Discount / 100;
+                            total = total - total * i;
+                        }
+                        else
+                        {
+                            total = total - order.Voucher.Discount;
+                        }
+                }
+                ViewBag.total = total;
                 ViewBag.lst = lst;
                 int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
                 query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)

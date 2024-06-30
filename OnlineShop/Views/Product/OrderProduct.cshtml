@@ -46,7 +46,22 @@
                                             </div>
                                         </div>
                                     </div>
-                        <div>
+                        <div
+                             <span>Voucher</span>
+                            <div style="flex-direction:row;    text-align: -webkit-right;">
+
+                                    <select  name="voucherSelected" id="voucherSelected">
+                                        <option value="0">Chọn voucher</option>
+                                    @foreach (var item in (List<VoucherItem>)ViewBag.vouchers)
+                                    {
+                                                <option value="@item.VoucherItemId">@item.Voucher.VoucherName</option>
+                                    }
+                                    </select>
+
+
+
+                            </div>
+
                             <h5>Phương thức thanh toán</h5>
                             <div style="margin: 10"></div>
                             <style>
@@ -113,7 +128,47 @@
                                             <tfoot>
                                                 <tr class="order-total">
                                                     <th>Tổng đơn hàng:</th>
-                                                    <td><strong><span class="amount">@ViewBag.Total.ToString("#,##0")&nbsp;VNĐ</span></strong></td>
+                                            <td><strong><span id="orderAmount" class="amount">@ViewBag.Total.ToString("#,##0")&nbsp;VNĐ</span></strong></td>
+                                            <script>
+                                                // Lấy reference tới select element
+                                                const voucherSelect = document.getElementById('voucherSelected');
+                                                const orderAmount = document.getElementById('orderAmount');
+                                                // Thêm event listener cho sự kiện change
+                                                voucherSelect.addEventListener('change', function () {
+                                                    // Lấy giá trị được chọn
+                                                    const selectedValue = this.value;
+
+                                                    // Thực hiện các xử lý tương ứng với giá trị được chọn
+                                                    if (selectedValue !== '0') {
+                                                        $.ajax({
+                                                            url: '@Url.Action("ApplyVoucher", "Product")', // URL đến phương thức OrderCart trong Controller
+                                                            type: 'POST',
+                                                            data: { voucherId: selectedValue,
+                                                                    productId: @ViewBag.ProductId,
+                                                                    quantity: @ViewBag.Count},
+                                                            success: function (response) {
+                                                                // Format số liệu
+                                                                var formattedAmount = response.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "&nbsp;VNĐ";
+
+                                                                // Cập nhật HTML element
+                                                                $('#orderAmount').html(formattedAmount);
+                                                                console.log(response)
+                                                            },
+                                                            error: function () {
+
+                                                            }
+                                                        });
+                                                    } else {
+
+                                                    }
+                                                });
+                                                $('.nice-select-wide').on('change', function () {
+                                                    // Xử lý sự kiện change ở đây
+                                                    var selectedValue = $(this).val();
+                                                    console.log('Selected value:', selectedValue);
+                                                });
+
+                                            </script>
                                                 </tr>
                                             </tfoot>
                                         </table>
