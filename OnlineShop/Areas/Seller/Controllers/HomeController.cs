@@ -257,6 +257,18 @@ namespace OnlineShop.Areas.Seller.Controllers
 
         public IActionResult CSKH()
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Seller")
+            {
+                return RedirectToAction("Index", "Home", new { area = roleName });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             return View();
         }
         [HttpGet]

@@ -15,7 +15,6 @@
                     <div class="myaccount-orders">
                         <h4 class="small-title">Chi tiết đơn hàng</h4>
                         <div>
-                            <hr />
                             <table class="table table-bordered table-hover">
                                 <tbody>
                                     <tr>
@@ -27,8 +26,6 @@
                                         <th>Ngày đặt</th>
                                         <th>Tình trạng đơn hàng</th>
                                         <th>Sản phẩm</th>
-                                        <th>Voucher</th>
-                                        <th>Tổng đơn hàng</th>
                                     </tr>
                                         <tr>
                                         <td>@Html.DisplayFor(model => model.Receiver)</td>
@@ -65,16 +62,14 @@
                                                     }
                                                     
                                                 </div>
-
                                                
                                             }
                                         </td>
-                                        <td>@Model.Voucher.VoucherName</td>
-                                        <td>@ViewBag.total.ToString("#,##0") VNĐ</td>
                                         </tr>
                                 </tbody>
                             </table>
-                            
+                            <p style="padding-top: 10px;"><strong>Voucher: </strong>@Model.Voucher.VoucherName</p>
+                            <p><strong>Tổng đơn hàng: </strong>@ViewBag.total.ToString("#,##0") VNĐ</p>
                         </div>
                         <div>
                             <br/>

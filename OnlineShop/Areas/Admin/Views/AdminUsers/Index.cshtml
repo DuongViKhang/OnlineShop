@@ -46,10 +46,14 @@
                 {
                     <td>Bị khóa</td>
                 }
+                @if (item.IsDeleted == 2)
+                {
+                    <td>Chưa duyệt</td>
+                }
             <td>
                 @Html.DisplayFor(modelItem => item.Role.RoleName)
             </td>
-            @if (item.RoleId == 2)
+            @if (item.RoleId != 1)
             {
                 <td>
                     <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminUsers" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> |
@@ -62,15 +66,19 @@
                     {
                         <a class="btn btn-success" asp-area="Admin" asp-controller="AdminUsers" asp-action="Delete" asp-route-id="@item.UserId">Mở khóa</a>
                     }
+                    @if (item.IsDeleted == 2)
+                    {
+                        <a class="btn btn-success" asp-area="Admin" asp-controller="AdminUsers" asp-action="Delete" asp-route-id="@item.UserId">Duyệt</a>
+                    }
             </td>
             }
-                @if(item.RoleId == 1)
-                {
-                    <td>
-                        <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminUsers" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> |
-                        <a class="btn btn-warning" asp-area="Admin" asp-controller="AdminUsers" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a>
-                    </td>
-                }
+            @if(item.RoleId == 1)
+            {
+                <td>
+                    <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminUsers" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> |
+                    <a class="btn btn-warning" asp-area="Admin" asp-controller="AdminUsers" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a>
+                </td>
+            }
             </tr>
 }
     </tbody>

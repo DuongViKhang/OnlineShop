@@ -36,7 +36,7 @@
                             <br />
                             @if(ViewBag.mess != null)
                             {
-                                <div class="alert alert-danger" role="alert" style="font-size:13px; text-align: center; vertical-align: middle;">
+                                <div id="error-message" class="alert alert-danger" role="alert" style="font-size:13px; text-align: center; vertical-align: middle;">
                                     @ViewBag.mess
                                 </div>
                             }
@@ -45,4 +45,15 @@
                 </div>
             </div>
         </main>
+        @section Scripts {
+            <script>
+                window.onload = function() {
+                    var errorMessage = document.getElementById("error-message");
+                    if (errorMessage) {
+                        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        errorMessage.focus();
+                    }
+                };
+            </script>
+        }
 

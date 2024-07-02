@@ -37,7 +37,7 @@
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div><br />
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label class="control-label">Trạng thái email</label>
                 <select asp-for="IsEmailActive" class="form-control">
                     <option value="0">Chưa kích hoạt</option>
@@ -49,7 +49,7 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div><br />
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label class="control-label">Vai trò</label>
                 <input value="Shipper" class="form-control" disabled />
             </div><br />
@@ -64,10 +64,10 @@
                 <input id="Avatar" name="Avatar" class="form-control" type="file" />
                 <span asp-validation-for="Avatar" class="text-danger"></span>
             </div><br />
-            <div class="form-group">
-                <label class="control-label">Trạng thái</label>
+            <div class="form-group" hidden>
+                <label class="control-label" hidden>Trạng thái</label>
                 <select asp-for="IsDeleted" class="form-control">
-                    <option value="1">Bị khóa</option>
+                    <option value="2">Đợi duyệt</option>
                 </select>
                 <span asp-validation-for="IsDeleted" class="text-danger"></span>
             </div><br />

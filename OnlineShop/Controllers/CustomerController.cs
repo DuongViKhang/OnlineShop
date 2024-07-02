@@ -72,6 +72,11 @@ namespace OnlineShop.Controllers
                         ViewBag.mess = "Tài khoản hiện đang bị khóa";
                         return View();
                     }
+                    if (lst[0].IsDeleted == 2)
+                    {
+                        ViewBag.mess = "Tài khoản chưa được duyệt";
+                        return View();
+                    }
                     if (lst[0].RoleId == 1)
                     {
                         HttpContext.Session.SetString("roleName", "Admin");
@@ -463,7 +468,9 @@ namespace OnlineShop.Controllers
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             try
             {
-                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).Include(o=>o.Voucher).FirstOrDefault();
+                Order order = _context.Orders.Include(o => o.Status).
+                    Include(o => o.Voucher)
+                    .Where(o => o.OrderId == id).FirstOrDefault();
                 if (order.UserId != userId || order == null)
                 {
                     return RedirectToAction("Orders", "Customer");
@@ -533,7 +540,9 @@ namespace OnlineShop.Controllers
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             try
             {
-                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
+                Order order = _context.Orders.Include(o => o.Status)
+                    .Include(o => o.Voucher)
+                    .Where(o => o.OrderId == id).FirstOrDefault();
                 if (order.UserId != userId || order == null)
                 {
                     return RedirectToAction("Orders", "Customer");
@@ -546,7 +555,20 @@ namespace OnlineShop.Controllers
                                 Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                             };
                 List<OrderCartViewModel> lst = query.ToList();
-                ViewBag.total = lst.Sum(n => n.Total);
+                var total = (double?)lst.Sum(n => n.Total);
+                if (order.VoucherId > 0)
+                {
+                    if (order.Voucher.DiscountType.Contains("Percent"))
+                    {
+                        var i = order.Voucher.Discount / 100;
+                        total = total - total * i;
+                    }
+                    else
+                    {
+                        total = total - order.Voucher.Discount;
+                    }
+                }
+                ViewBag.total = total;
                 ViewBag.lst = lst;
                 int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
                 query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
@@ -608,7 +630,9 @@ namespace OnlineShop.Controllers
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             try
             {
-                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
+                Order order = _context.Orders.Include(o => o.Status)
+                    .Include(o => o.Voucher)
+                    .Where(o => o.OrderId == id).FirstOrDefault();
                 if (order.UserId != userId || order == null)
                 {
                     return RedirectToAction("Orders", "Customer");
@@ -621,7 +645,20 @@ namespace OnlineShop.Controllers
                                 Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                             };
                 List<OrderCartViewModel> lst = query.ToList();
-                ViewBag.total = lst.Sum(n => n.Total);
+                var total = (double?)lst.Sum(n => n.Total);
+                if (order.VoucherId > 0)
+                {
+                    if (order.Voucher.DiscountType.Contains("Percent"))
+                    {
+                        var i = order.Voucher.Discount / 100;
+                        total = total - total * i;
+                    }
+                    else
+                    {
+                        total = total - order.Voucher.Discount;
+                    }
+                }
+                ViewBag.total = total;
                 ViewBag.lst = lst;
                 int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
                 query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
@@ -683,7 +720,10 @@ namespace OnlineShop.Controllers
             try
             {
                 User user = _context.Users.Find(userId);
-                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
+                Order order = _context.Orders
+                    .Include(o => o.Status)
+                    .Include(o => o.Voucher)
+                    .Where(o => o.OrderId == id).FirstOrDefault();
                 if (order.UserId != userId || order == null)
                 {
                     return RedirectToAction("Orders", "Customer");
@@ -697,12 +737,25 @@ namespace OnlineShop.Controllers
                                 Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                             };
                 List<OrderCartViewModel> orderItems = query.ToList();
+                var total = (double?)orderItems.Sum(n => n.Total);
+                if (order.VoucherId > 0)
+                {
+                    if (order.Voucher.DiscountType.Contains("Percent"))
+                    {
+                        var i = order.Voucher.Discount / 100;
+                        total = total - total * i;
+                    }
+                    else
+                    {
+                        total = total - order.Voucher.Discount;
+                    }
+                }
                 InvoiceViewModel invoice = new InvoiceViewModel
                 {
                     User = user,
                     Order = order,
                     OrderItems = orderItems,
-                    Total = orderItems.Sum(n => n.Total)
+                    Total = (decimal)total
                 };
                 return new ViewAsPdf(invoice)
                 {

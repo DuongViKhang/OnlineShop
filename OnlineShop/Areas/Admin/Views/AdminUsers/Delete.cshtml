@@ -13,6 +13,10 @@
 {
     <h2>Mở khóa tài khoản</h2>
 }
+@if (Model.IsDeleted == 2)
+{
+    <h2>Duyệt tài khoản</h2>
+}
 <div>
     <hr />
     <dl class="dl-horizontal">
@@ -99,7 +103,11 @@
         @if (Model.IsDeleted == 0)
         {
             <input type="submit" value="Khóa" class="btn btn-danger" />
-        }   
+        }  
+        @if (Model.IsDeleted == 2)
+        {
+            <input type="submit" value="Duyệt" class="btn btn-success" />
+        }  
         @if (Model.IsDeleted == 1)
         {
             <input type="submit" value="Mở khóa" class="btn btn-success" />

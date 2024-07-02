@@ -47,6 +47,10 @@
                 {
                     <td>Bị khóa</td>
                 }
+                @if (item.IsDeleted == 2)
+                {
+                    <td>Chưa duyệt</td>
+                }
                 <td>
                     @Html.DisplayFor(modelItem => item.Role.RoleName)
                 </td>

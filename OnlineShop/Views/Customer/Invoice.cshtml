@@ -50,10 +50,16 @@
     		<div class="row">
     			<div class="col-xs-6">
     				<address>
-    					<strong>Phương thức thanh toán:</strong><br>
-    					Visa ending **** 4242<br>
-    					jsmith@email.com
-    				</address>
+                        <strong>Phương thức thanh toán:</strong><br />
+                        @if(Model.Order.IsPay == 0)
+                        {
+                            <p>Thanh toán khi nhận hàng</p>
+                        }
+                        else
+                        {
+                            <p>Thanh toán trực tuyến</p>
+                        }
+                    </address>
     			</div>
     			<div class="col-xs-6" style="padding-left:500px;">
     				<address>
@@ -71,38 +77,32 @@
     			<div class="panel-heading">
     				<h3 class="panel-title"><strong>Đơn hàng</strong></h3>
     			</div>
-    			<div class="panel-body">
-    				<div class="table-responsive">
-    					<table class="table table-condensed">
-    						<thead>
-                                <tr>
-        							<td><strong>Sản phẩm</strong></td>
-        							<td class="text-center"><strong>Giá</strong></td>
-        							<td class="text-center"><strong>Số lượng</strong></td>
-        							<td class="text-right"><strong>Tổng</strong></td>
-                                </tr>
-    						</thead>
-    						<tbody>
-                                @foreach(var item in Model.OrderItems)
-                                {
-    							    <tr>
-    								    <td>@item.ProductName</td>
-    								    <td class="text-center">@item.PromotionalPrice.ToString("#,##0") VNĐ</td>
-    								    <td class="text-center">@item.Count</td>
-    								    <td class="text-right">@item.Total.ToString("#,##0") VNĐ</td>
-    							    </tr>
-                                }
-    							<tr>
-    								<td class="no-line"></td>
-    								<td class="no-line"></td>
-    								<td class="no-line text-center"><strong>Tổng thanh toán</strong></td>
-    								<td class="no-line text-right">@Model.Total.ToString("#,##0") VNĐ</td>
-    							</tr>
-    						</tbody>
-    					</table>
-    				</div>
-    			</div>
+    			<table class="table table-bordered table-hover">
+    				<thead>
+                        <tr>
+        					<td><strong>Sản phẩm</strong></td>
+        					<td class="text-center"><strong>Giá</strong></td>
+        					<td class="text-center"><strong>Số lượng</strong></td>
+                            <td class="text-center"><strong>Tồng</strong></td>
+                        </tr>
+    				</thead>
+    				<tbody>
+                        @foreach(var item in Model.OrderItems)
+                        {
+    						<tr>
+    							<td>@item.ProductName</td>
+    							<td class="text-center">@item.PromotionalPrice.ToString("#,##0") VNĐ</td>
+    							<td class="text-center">@item.Count</td>
+    							<td class="text-right">@item.Total.ToString("#,##0") VNĐ</td>
+    						</tr>
+                        }
+    				</tbody>
+    			</table>
     		</div>
+            <p style="padding-top: 10px;"><strong>Voucher: </strong>@Model.Order.Voucher.VoucherName</p>
+            <p><strong>Tổng đơn hàng: </strong>@Model.Total.ToString("#,##0") VNĐ</p>
+            <br />
+            <br />
     	</div>
     </div>
 </div>

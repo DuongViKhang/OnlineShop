@@ -331,7 +331,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 user.IsDeleted = 1;
             }
-            else if (user.IsDeleted == 1)
+            else if (user.IsDeleted == 1 || user.IsDeleted == 2)
             {
                 user.IsDeleted = 0;
             }
