@@ -37,7 +37,7 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            return View(_context.Vouchers.ToPagedList(page ?? 1, 5));
+            return View(_context.Vouchers.Where(n => n.VoucherId != 0).ToPagedList(page ?? 1, 5));
         }
 
         // GET: Admin/AdminVouchers/Details/5

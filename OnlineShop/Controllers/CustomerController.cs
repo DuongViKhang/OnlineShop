@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using OnlineShop.ViewModels;
 using System.Reflection;
 using Rotativa.AspNetCore;
+using X.PagedList;
 
 namespace OnlineShop.Controllers
 {
@@ -417,7 +418,7 @@ namespace OnlineShop.Controllers
             return View(user);
         }
 
-        public async Task<IActionResult> Orders()
+        public async Task<IActionResult> Orders(int? page)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -450,7 +451,7 @@ namespace OnlineShop.Controllers
             ViewBag.totalCartItems = lst.Sum(n => n.Total);
             List<Order> orders = _context.Orders.Include(o=>o.Status).Where(o=>o.UserId== userId).OrderByDescending(o => o.Date).ToList();
             ViewBag.numOfOrders = orders.Count;
-            return View(orders);
+            return View(orders.ToPagedList(page ?? 1, 5));
         }
         public async Task<IActionResult> OrderDetail(int id)
         {

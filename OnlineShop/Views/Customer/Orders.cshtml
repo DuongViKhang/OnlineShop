@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<OnlineShop.Models.Order>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 @{
     ViewData["Title"] = "Orders";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -72,6 +75,26 @@
 							Chưa có đơn hàng
 					</p>
                 }
+                <div class="pagination-area pt-10" style="padding-left: 100px;">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                @Html.PagedListPager((IPagedList) Model, page => Url.Action("Orders", new {page = page }),
+                                new PagedListRenderOptions {
+                                LiElementClasses = new string[] {"page-item"},
+                                PageClasses = new string[] {"page-link"}, 
+                                MaximumPageNumbersToDisplay = 5,
+                                DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                DisplayEllipsesWhenNotShowingAllPageNumbers = true, 
+                                EllipsesElementClass = "page-item disabled",
+                                LinkToPreviousPageFormat = "<",
+                                LinkToNextPageFormat = ">",
+                                DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+                                DisplayLinkToLastPage = PagedListDisplayMode.Never
+                                })
+                            </ul>
+                        </nav>
+                    </div>
             </div>
         </div>
         </div>
