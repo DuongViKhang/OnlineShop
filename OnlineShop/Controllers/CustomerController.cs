@@ -128,11 +128,6 @@ namespace OnlineShop.Controllers
                 var lst = _context.Users.ToList();
                 foreach(var item in lst)
                 {
-                    if(item.IdCard == user.IdCard)
-                    {
-                        ViewBag.mess = "ID đã tồn tại";
-                        return View();
-                    }
                     if(item.Email == user.Email)
                     {
                         ViewBag.mess = "Email đã tồn tại";
