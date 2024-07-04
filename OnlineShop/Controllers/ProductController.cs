@@ -357,7 +357,7 @@ namespace OnlineShop.Controllers
 
             if(voucherSelected > 0) 
             { 
-                var voucher = _context.VoucherItems.Include(o => o.Voucher).FirstOrDefault(v=>v.VoucherId==voucherSelected);
+                var voucher = _context.VoucherItems.Include(o => o.Voucher).FirstOrDefault(v=>v.VoucherItemId==voucherSelected);
                 if(voucher != null)
                 {
                     if (voucher.Voucher.DiscountType == "Percent")
