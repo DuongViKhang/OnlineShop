@@ -143,7 +143,7 @@
                                                     const selectedValue = this.value;
                                                
                                                 // Thực hiện các xử lý tương ứng với giá trị được chọn
-                                                    if (selectedValue !== '0') {
+                                                    
                                                         $.ajax({
                                                             url: '@Url.Action("ApplyVoucher", "ShoppingCart")', // URL đến phương thức OrderCart trong Controller
                                                             type: 'POST',
@@ -160,9 +160,7 @@
                                                                 
                                                             }
                                                         });
-                                                    } else {
-                                                       
-                                                    }
+                                                   
                                                 });
                                                 $('.nice-select-wide').on('change', function () {
                                                     // Xử lý sự kiện change ở đây

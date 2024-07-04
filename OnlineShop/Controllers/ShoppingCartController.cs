@@ -280,7 +280,7 @@ namespace OnlineShop.Controllers
             var total = (double?)cartItems.Sum(n => n.Total);
 
 
-            if (voucherId != null)
+            if (voucherId >0)
             {
                 var voucherApplied = _context.VoucherItems.Include(v => v.Voucher).FirstOrDefault(v => v.VoucherItemId == voucherId);
                 if (voucherApplied.Voucher.DiscountType.Contains("Percent"))
@@ -358,7 +358,7 @@ namespace OnlineShop.Controllers
                     ShipperId = 1,
                     IsPay = 0,
                     Date = DateTime.Now,
-                    VoucherId= voucheritem.VoucherId,
+                    VoucherId= voucheritem != null ? voucheritem.VoucherId : 0,
                     IsDeleted = 0
                 };
                 
@@ -480,7 +480,7 @@ namespace OnlineShop.Controllers
                                 StatusId = 1,
                                 ShipperId = 1,
                                 IsPay = 1,
-                                VoucherId = voucheritem.VoucherId,
+                                VoucherId = voucheritem != null ? voucheritem.VoucherId : 0,
                                 Date = DateTime.Now,
                                 IsDeleted = 0
                             };
