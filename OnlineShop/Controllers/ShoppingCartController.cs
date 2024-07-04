@@ -225,6 +225,7 @@ namespace OnlineShop.Controllers
 				{
 					total = total - voucherApplied.Voucher.Discount;
 				}
+               
             }
 			ViewBag.totalCartItems = total;
 
@@ -232,7 +233,7 @@ namespace OnlineShop.Controllers
             var list_voucher = new List<VoucherItem>();
             foreach(var voucher in vouchers)
             {               
-                if (voucher.Voucher.IsDeleted == 0 && DateTime.Now <= voucher.Voucher.ExpirationDate)
+                if (voucher.Voucher.IsDeleted == 0 && DateTime.Now <= voucher.Voucher.ExpirationDate && voucher.Quantity>0)
                 {
                     list_voucher.Add(voucher);
                 }
@@ -335,11 +336,18 @@ namespace OnlineShop.Controllers
                 ViewBag.vouchers = list_voucher;
                 return View(user);
 			}
-			
 
-			if(paymentOption == "4")
+			
+			if (paymentOption == "4")
 			{
-                Order order = new Order
+				var voucheritem = _context.VoucherItems.FirstOrDefault(v => v.VoucherItemId == voucherSelected);
+				if (voucherSelected > 0 && voucheritem != null)
+				{
+					voucheritem.Quantity -= 1;
+					_context.Update(voucheritem);
+				}
+
+				Order order = new Order
                 {
                     UserId = userId,
                     Receiver = receiver,
@@ -350,10 +358,11 @@ namespace OnlineShop.Controllers
                     ShipperId = 1,
                     IsPay = 0,
                     Date = DateTime.Now,
-                    VoucherId=voucherSelected,
+                    VoucherId= voucheritem.VoucherId,
                     IsDeleted = 0
                 };
-                _context.Orders.Add(order);
+                
+				_context.Orders.Add(order);
                 await _context.SaveChangesAsync();
                 int newOrderId = order.OrderId;
                 var lst = _context.CartItems.Where(n => n.Cart.UserId == userId && n.IsDeleted == 0).ToList();
@@ -455,7 +464,13 @@ namespace OnlineShop.Controllers
                         var order = _context.Orders.FirstOrDefault(x => x.OrderId == int.Parse(orderId));
                         if (order == null)
                         {
-                            Order orderNew = new Order
+							var voucheritem = _context.VoucherItems.FirstOrDefault(v => v.VoucherItemId == voucherId);
+							if (voucherId > 0 && voucheritem != null)
+							{
+								voucheritem.Quantity -= 1;
+								_context.Update(voucheritem);
+							}
+							Order orderNew = new Order
                             {
                                 UserId = userId,
                                 Receiver = receiver,
@@ -465,7 +480,7 @@ namespace OnlineShop.Controllers
                                 StatusId = 1,
                                 ShipperId = 1,
                                 IsPay = 1,
-                                VoucherId = voucherId,
+                                VoucherId = voucheritem.VoucherId,
                                 Date = DateTime.Now,
                                 IsDeleted = 0
                             };
