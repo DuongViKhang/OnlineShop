@@ -79,11 +79,11 @@ namespace OnlineShop.Areas.Shipper.Controllers
            
             if (keyword != null)
             {
-                orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => (o.StatusId == 2 || o.StatusId == 6) && o.ShipperId == userId && (o.Address.ToLower().Contains(keyword.ToLower()) || o.Phone.ToLower().Contains(keyword.ToLower()))).OrderByDescending(o => o.Date);
+                orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.ShipperId == userId && (o.Address.ToLower().Contains(keyword.ToLower()) || o.Phone.ToLower().Contains(keyword.ToLower()))).OrderByDescending(o => o.Date);
             }
             else
             {
-                orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => (o.StatusId == 2 || o.StatusId == 6) && o.ShipperId == userId).OrderByDescending(o => o.Date);
+                orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.ShipperId == userId).OrderByDescending(o => o.Date);
             }
             return View(orderList.ToPagedList(page ?? 1, 5));
         }

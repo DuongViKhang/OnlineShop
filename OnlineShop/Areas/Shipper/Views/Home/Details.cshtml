@@ -105,20 +105,17 @@
     </dl>
 </div>
 <div>
-    @if(Model.Status.StatusName == "Đang xử lý")
-    {
-        <a asp-action="Edit" asp-route-id="@Model.OrderId" class="btn btn-success">Xác nhận</a> 
-        <a asp-action="Delete" asp-route-id="@Model.OrderId" class="btn btn-danger">Từ chối</a> 
-        <br /><br />
-        <a asp-action="Index">Trở về danh sách</a>
-    }
     @if(Model.Status.StatusName == "Đang giao")
     {
-        <a asp-action="Update" asp-route-id="@Model.OrderId" class="btn btn-primary">Đã giao</a>
+        <a asp-controller="Home" asp-action="Delivered" asp-route-id="@Model.OrderId" class="btn btn-primary">Đã giao</a>
         <br /><br />
+    }
+    @if(Model.ShipperId == null)
+    {
         <a asp-action="Index">Trở về danh sách</a>
     }
-    @if(Model.Status.StatusName == "Đã nhận" || Model.Status.StatusName == "Từ chối"){
-        <a asp-action="Index">Trở về danh sách</a>
+    else
+    {
+        <a asp-action="ReceiveOrderList">Trở về danh sách</a>
     }
 </div>
