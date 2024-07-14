@@ -464,8 +464,10 @@ namespace OnlineShop.Controllers
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             try
             {
-                Order order = _context.Orders.Include(o => o.Status).
-                    Include(o => o.Voucher)
+                Order order = _context.Orders
+                    .Include(o => o.Status)
+                    .Include(o => o.Shipper)
+                    .Include(o => o.Voucher)
                     .Where(o => o.OrderId == id).FirstOrDefault();
                 if (order.UserId != userId || order == null)
                 {

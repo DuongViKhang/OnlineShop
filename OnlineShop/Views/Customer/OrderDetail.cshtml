@@ -68,7 +68,16 @@
                                         </tr>
                                 </tbody>
                             </table>
-                            <p style="padding-top: 10px;"><strong>Voucher: </strong>@Model.Voucher.VoucherName</p>
+                            @if(Model.Shipper != null)
+                            {
+                                <p style="padding-top: 10px;"><strong>Người giao: </strong>@Model.Shipper.UserName</p>
+                            }
+                            else
+                            {
+                                <p style="padding-top: 10px;"><strong>Người giao: </strong>Chưa có</p>
+                            }
+                            <p><strong>Phương thức thanh toán: </strong>@Model.PaymentMethod</p>
+                            <p><strong>Voucher: </strong>@Model.Voucher.VoucherName</p>
                             <p><strong>Tổng đơn hàng: </strong>@ViewBag.total.ToString("#,##0") VNĐ</p>
                         </div>
                         <div>
