@@ -42,21 +42,17 @@
 			</div>
 			<div id="chat-panel-container">
 				<div id="chat-panel" class="chat-panel">
+					<p id="messAlert">Chưa có tin nhắn nào</p>
 					<div class="row no-gutters">
-						<div class="col-md-3">
-							<div class="chat-bubble chat-bubble--left">
-								Hello dude!
-							</div>
+						<div class="col-md-3" >
+							
 						</div>
 					</div>
 					<div class="row no-gutters">
 						<div class="col-md-3 offset-md-9">
-							<div class="chat-bubble chat-bubble--right">
-								Hello dude!
-							</div>
+							
 						</div>
 					</div>
-
 				</div>
 			</div>
 			<div class="row">
@@ -218,9 +214,11 @@
 					sellerId: sellerId
 				},
 				success: function (data) {
+					if (data.length > 0) {
+						document.getElementById('messAlert').style = 'display:none'
+					}
 					let isFirst = true;
 					data.forEach(function (item) {
-						console.log(item);
 						var messageObj = JSON.parse(item.message);									
 						createCustomer(item.userId, sellerId, messageObj.content, messageObj.timeSend);
 						createChatPanel(item.userId, '')
@@ -229,7 +227,7 @@
 							isFirst = false;
 						}
 					});
-
+					
 				},
 				error: function (xhr, status, error) {
 					console.error('Error:', error);

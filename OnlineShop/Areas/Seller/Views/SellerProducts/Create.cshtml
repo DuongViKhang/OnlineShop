@@ -31,12 +31,12 @@
             <br />
             <div class="form-group">
                 <label class="control-label">Giá</label>
-                <input asp-for="Price" class="form-control" />
+                <input asp-for="Price" type="number" class="form-control" />
             </div>
             <br />
             <div class="form-group">
                 <label class="control-label">Giá khuyến mãi</label>
-                <input asp-for="PromotionalPrice" class="form-control" />
+                <input asp-for="PromotionalPrice" type="number" class="form-control" />
             </div>
             <br />
             <div class="form-group">
@@ -45,8 +45,8 @@
             </div>
             <br />
             <div class="form-group">
-                <label class="control-label">Đã bán</label>
-                <input asp-for="Sold" class="form-control" />
+                <label hidden class="control-label">Đã bán</label>
+                <input hidden value="0" asp-for="Sold" class="form-control" />
             </div>
             <br />
             <div class="form-group">

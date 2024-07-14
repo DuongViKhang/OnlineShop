@@ -698,16 +698,12 @@
         <div id="commentsContainer">
             <div class="comment">
                 <div style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+                    <p id="comAlert">Chưa có đánh giá</p>
                     <div style="margin-right: 10px;">
-                        <img src="path_to_avatar_image" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%;">
+                       
                     </div>
                     <div>
-                        <p style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Người dùng</p>
-                        <p style="font-size: 14px; color: #555;">Nội dung bình luận</p>
-                        <div style="display: flex; align-items: center;">
-                            <span style="font-size: 12px; color: #999;">Đánh giá:</span>
-                            <span style="margin-left: 5px; font-size: 14px; color: #ff9800;">4.5</span>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -803,10 +799,12 @@
         // Sử dụng hàm getDanhGia với một callback function
         getDanhGia(function (comments) {
             // Thiết lập biến toàn cục
-           
+            
            
             const totalComments = comments.length;
-
+            if(totalComments>0){
+                document.getElementById('comAlert').style='display:none'
+            }
            
             // Số trang tính được
             const totalPages = Math.ceil(totalComments / commentsPerPage);
@@ -984,7 +982,7 @@
             rating.style.marginLeft = '5px';
             rating.style.fontSize = '14px';
             rating.style.color = '#ff9800';
-            rating.textContent = comment.rate;
+            rating.textContent = comment.rate + ' sao';
 
             // Thêm các phần tử đánh giá vào container
             ratingContainer.appendChild(ratingLabel);
