@@ -16,6 +16,7 @@ namespace OnlineShop.Models
         public int UserId { get; set; }
         public string Receiver { get; set; }
         public int? ShipperId { get; set; }
+        public string? PaymentMethod { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
         public int VoucherId { get; set; }

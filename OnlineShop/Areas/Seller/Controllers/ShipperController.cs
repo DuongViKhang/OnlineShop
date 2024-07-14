@@ -42,7 +42,7 @@ namespace OnlineShop.Areas.Seller.Controllers
 				return RedirectToAction("Index", "Home", new { area = roleName });
 			}
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-			var onlineShopContext = _context.Users.Include(u => u.Role).Where(n=>n.SellerId==userId);
+			var onlineShopContext = _context.Users.Include(u => u.Role).Where(n=>n.RoleId==4);
 			return View(onlineShopContext.ToPagedList(page ?? 1, 5));
 		}
 
@@ -68,7 +68,7 @@ namespace OnlineShop.Areas.Seller.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(m => m.UserId == id && m.SellerId == userId);
+                .FirstOrDefaultAsync(m => m.UserId == id);
             if (user == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -107,7 +107,6 @@ namespace OnlineShop.Areas.Seller.Controllers
             {
                 user.Password = encryptPassword(user.Password);
                 user.RoleId = 4;
-                user.SellerId = int.Parse(HttpContext.Session.GetString("userId"));
                 user.Date = DateTime.Now;
                 if (Avatar != null)
                 {
@@ -191,7 +190,7 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(m => m.UserId == id && m.SellerId == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(m => m.UserId == id);
             if (user == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -215,9 +214,8 @@ namespace OnlineShop.Areas.Seller.Controllers
             {
                 try
                 {
-                   user.Password = _context.Users.AsNoTracking().FirstOrDefault(u=>u.UserId == id).Password;
+                    user.Password = _context.Users.AsNoTracking().FirstOrDefault(u=>u.UserId == id).Password;
                     user.RoleId = _context.Users.AsNoTracking().FirstOrDefault(u => u.UserId == id).RoleId;
-                    user.SellerId = _context.Users.AsNoTracking().FirstOrDefault(u => u.UserId == id).SellerId;
                     user.Date = _context.Users.AsNoTracking().FirstOrDefault(u => u.UserId == id).Date;
                     if (Password != null)
                     {
@@ -305,7 +303,7 @@ namespace OnlineShop.Areas.Seller.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(m => m.UserId == id && m.SellerId == userId);
+                .FirstOrDefaultAsync(m => m.UserId == id);
             if (user == null)
             {
                 return RedirectToAction(nameof(Index));

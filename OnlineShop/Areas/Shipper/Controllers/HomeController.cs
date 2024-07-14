@@ -52,10 +52,7 @@ namespace OnlineShop.Areas.Shipper.Controllers
             {
                 foreach (var orderItem in order.OrderItems)
                 {
-                    if (orderItem.Product.SellerId == user.SellerId)
-                    {
-                        orderList.Where(o => o.OrderId == orderItem.OrderId);
-                    }
+                    orderList.Where(o => o.OrderId == orderItem.OrderId);
                 }
 
             }
