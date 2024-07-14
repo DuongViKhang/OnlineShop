@@ -158,6 +158,7 @@ namespace OnlineShop.Areas.Seller.Controllers
                     using var fileStream = new FileStream(path, FileMode.Create);
                     await Image.CopyToAsync(fileStream);
                 }
+                product.Date = DateTime.Now;
                 product.SellerId = userId;
                 _context.Add(product);
                 await _context.SaveChangesAsync();

@@ -49,7 +49,8 @@
                                 @if (item.StatusId == 1 || item.StatusId == 2 || item.StatusId == 7)
                                 {
                                     <td>
-                                        <a asp-action="CancelOrder" asp-controller="Customer" asp-route-id="@item.OrderId" class="btn btn-danger btn-primary-hover" style="width:130px; height:36px;"><span>Hủy</span></a>
+                                                        <a asp-action="CancelOrder" asp-controller="Customer" asp-route-id="@item.OrderId" class="btn btn-danger btn-primary-hover" style="width:130px; height:36px;"><span>Hủy</span></a>
+                                                       
                                     </td>
                                 }
                                 @if(item.StatusId == 6) 
