@@ -23,6 +23,27 @@
             @Html.DisplayFor(model => model.Receiver)
         </dd>
         <dt>
+            Người giao
+        </dt>
+        @if(Model.Shipper != null)
+        {
+            <dd>
+                @Html.DisplayFor(model => model.Shipper.UserName)
+            </dd>
+        }
+        @if(Model.Shipper == null)
+        {
+            <dd>
+                Chưa có người giao
+            </dd>
+        }
+        <dt>
+            Phương thức thanh toán
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PaymentMethod)
+        </dd>
+        <dt>
             Địa chỉ
         </dt>
         <dd>

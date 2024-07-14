@@ -56,6 +56,7 @@ namespace OnlineShop.Areas.Seller.Controllers
                 ViewBag.growth = string.Format("{0:0.00}", growth(year)) + "%";
             }
             ViewBag.totalUsers = totalUsers(year);
+            ViewBag.totalProducts = _context.Products.Where(n => n.SellerId == userId && n.IsDeleted == 0 && n.IsActive == 1).Count();
             ViewBag.totalOrders = totalOrders(year);
             List<decimal> monthlyRevenueLst = new List<decimal>();
             List<int> monthlySold = new List<int>();

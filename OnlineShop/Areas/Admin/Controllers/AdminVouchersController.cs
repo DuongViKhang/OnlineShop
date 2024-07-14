@@ -23,7 +23,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminVouchers
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int? page, string discountType, string keyword)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -37,7 +37,22 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            return View(_context.Vouchers.Where(n => n.VoucherId != 0).ToPagedList(page ?? 1, 5));
+            if (keyword != null)
+            {
+                ViewBag.discountType = "Tất cả voucher";
+                return View(_context.Vouchers.Where(n => n.VoucherId != 0 && n.VoucherName.Contains(keyword)).ToPagedList(page ?? 1, 5));
+            }
+            if (discountType == null || discountType == "All")
+            {
+                ViewBag.discountType = "Tất cả voucher";
+                return View(_context.Vouchers.Where(n => n.VoucherId != 0).ToPagedList(page ?? 1, 5));
+            }
+            else if (discountType != null)
+            {
+                ViewBag.discountType = discountType;
+                return View(_context.Vouchers.Where(n => n.VoucherId != 0 && n.DiscountType == discountType).ToPagedList(page ?? 1, 5));
+            }
+            return View();
         }
 
         // GET: Admin/AdminVouchers/Details/5

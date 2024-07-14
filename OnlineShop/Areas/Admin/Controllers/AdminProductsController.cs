@@ -27,7 +27,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminProducts
-        public async Task<IActionResult> Index(int ?page)
+        public async Task<IActionResult> Index(int? page, string category, string keyword)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -41,8 +41,26 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Products.OrderByDescending(n => n.IsDeleted).Include(p => p.Category);
-            return View(onlineShopContext.ToPagedList(page ?? 1, 5));
+            ViewBag.categories = _context.Categories.Select(n => n.CategoryName);
+            if(keyword != null)
+            {
+                ViewBag.category = "Tất cả sản phẩm";
+                var onlineShopContext = _context.Products.Where(n => n.ProductName.Contains(keyword)).OrderByDescending(n => n.IsDeleted).Include(p => p.Category);
+                return View(onlineShopContext.ToPagedList(page ?? 1, 5));
+            }
+            if (category == null || category == "All") 
+            { 
+                ViewBag.category = "Tất cả sản phẩm";
+                var onlineShopContext = _context.Products.OrderByDescending(n => n.IsDeleted).Include(p => p.Category);
+                return View(onlineShopContext.ToPagedList(page ?? 1, 5));
+            }
+            else if(category != null)
+            {
+                ViewBag.category = category;
+                var onlineShopContext = _context.Products.Where(n => n.Category.CategoryName == category).OrderByDescending(n => n.IsDeleted).Include(p => p.Category);
+                return View(onlineShopContext.ToPagedList(page ?? 1, 5));
+            }
+            return View();
         }
 
         // GET: Admin/AdminProducts/Details/5

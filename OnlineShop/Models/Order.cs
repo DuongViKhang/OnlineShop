@@ -28,6 +28,7 @@ namespace OnlineShop.Models
 
         public virtual StatusOrder Status { get; set; }
         public virtual User User { get; set; }
+        public virtual User Shipper { get; set; }
         public virtual Voucher Voucher { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
     }

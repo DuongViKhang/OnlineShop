@@ -211,7 +211,15 @@ namespace OnlineShop.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var category = await _context.Categories.FindAsync(id);
-            _context.Categories.Remove(category);
+            if(category.IsDeleted == 0)
+            {
+                category.IsDeleted = 1;
+            }
+            else
+            {
+                category.IsDeleted = 0;
+            }
+            _context.Update(category);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

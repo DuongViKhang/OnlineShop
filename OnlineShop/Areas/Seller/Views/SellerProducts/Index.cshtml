@@ -13,6 +13,40 @@
 <p>
     <a class="btn btn-success" asp-action="Create">Thêm sản phẩm</a>
 </p>
+<div class="row">
+    <div class="col-xl-2 col-xxl-5 d-flex">
+		<div class="col mt-0">
+			<select class="form-select" style="width: 170px;" id="categoriesDropdown">
+                <option class="option" hidden>@ViewBag.category</option>
+                <option class="option" value="All">Tất cả sản phẩm</option>
+                @foreach (var category in ViewBag.categories)
+				{
+					<option class="option" value="@category">@category</option>
+				}
+			</select>
+		</div>
+    </div>
+    <div class="col-xl-2 col-xxl-5 d-flex">
+		<div style="display:flex; padding-left:60px;">
+			<input class="input-field" id="keyword" type="text" placeholder="Tìm kiếm sản phẩm">
+            <button class="form-control" style="margin-left:3px;" id="searchButton" type="submit"><i class="pe-7s-search" data-feather="search"></i></button>
+		</div>
+        <script>
+            document.getElementById('searchButton').addEventListener('click', function() {
+                var keyword = document.getElementById('keyword').value;
+                window.location.href = '@Url.Action("Index", "SellerProducts")' + '?keyword=' + keyword;
+            });
+        </script>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#categoriesDropdown').change(function() {
+            var selectedCategory = $(this).val();
+            window.location.href = '@Url.Action("Index", "SellerProducts")' + '?category=' + selectedCategory;
+        });
+    });
+</script>
 <table class="table">
     <thead>
         <tr>
@@ -76,6 +110,10 @@
 }
     </tbody>
 </table>
+@if(Model.Count() == 0)
+{
+    <p class="text-danger" style="padding-left:350px;">Không tìm thấy kết quả!</p>
+}
 @Html.PagedListPager((IPagedList) Model, page => Url.Action("Index", new {page = page }), 
     new PagedListRenderOptions {
         LiElementClasses = new string[] {"page-item"},

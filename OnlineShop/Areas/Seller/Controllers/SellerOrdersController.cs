@@ -68,6 +68,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Shipper)
                 .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null || 
@@ -165,6 +166,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Shipper)
                 .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
             if (order == null ||
@@ -237,6 +239,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Shipper)
                 .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
             if (order == null ||
@@ -314,6 +317,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             var order = await _context.Orders
                 .Include(o => o.Status)
                 .Include(o => o.User)
+                .Include(o => o.Shipper)
                 .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(m => m.OrderId == id && m.User.UserId == userId);
             if (order == null ||

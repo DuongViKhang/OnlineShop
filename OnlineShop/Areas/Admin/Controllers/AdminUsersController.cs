@@ -28,7 +28,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminUsers
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int? page, string role)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -42,7 +42,12 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Users.Include(u => u.Role);
+            if(role == null)
+            {
+                role = "Customer";
+            }
+            ViewBag.Role = role;
+            var onlineShopContext = _context.Users.Include(u => u.Role).Where(n => n.Role.RoleName == role);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 

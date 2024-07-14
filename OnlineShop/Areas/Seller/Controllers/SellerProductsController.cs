@@ -27,7 +27,7 @@ namespace OnlineShop.Areas.Seller.Controllers
         }
 
         // GET: Seller/SellerProducts
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int? page, string category, string keyword)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -41,8 +41,26 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Products.Where(p => p.SellerId == userId).Include(p => p.Category).OrderBy(n => n.IsActive);
-            return View(onlineShopContext.ToPagedList(page ?? 1, 5));
+            ViewBag.categories = _context.Categories.Select(n => n.CategoryName);
+            if (keyword != null)
+            {
+                ViewBag.category = "Tất cả sản phẩm";
+                var onlineShopContext = _context.Products.Where(p => p.SellerId == userId && p.ProductName.Contains(keyword)).Include(p => p.Category).OrderBy(p => p.IsActive);
+                return View(onlineShopContext.ToPagedList(page ?? 1, 5));
+            }
+            if (category == null || category == "All")
+            {
+                ViewBag.category = "Tất cả sản phẩm";
+                var onlineShopContext = _context.Products.Where(p => p.SellerId == userId).Include(p => p.Category).OrderBy(p => p.IsActive);
+                return View(onlineShopContext.ToPagedList(page ?? 1, 5));
+            }
+            else if (category != null)
+            {
+                ViewBag.category = category;
+                var onlineShopContext = _context.Products.Where(p => p.SellerId == userId && p.Category.CategoryName == category).OrderByDescending(n => n.IsDeleted).Include(p => p.Category).OrderBy(p => p.IsActive); ;
+                return View(onlineShopContext.ToPagedList(page ?? 1, 5));
+            }
+            return View();
         }
 
         // GET: Seller/SellerProducts/Details/5
@@ -92,7 +110,7 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
+            ViewData["CategoryId"] = new SelectList(_context.Categories.Where(n => n.IsDeleted == 0), "CategoryId", "CategoryName");
             return View();
         }
 
