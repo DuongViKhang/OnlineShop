@@ -58,7 +58,7 @@
 													<td class="product_remove">
 														<form asp-controller="ShoppingCart" asp-action="Remove" method="post">
 															<input name="id" value="@item.CartItemId" type="hidden"/>
-															<button type="submit" class="pe-7s-close"></button>
+															<button type="submit" class="btn btn-danger">x</button>
 														</form>
 													</td>
 												</tr>
@@ -137,9 +137,11 @@
 							<p>Chưa có sản phẩm trong giỏ hàng</p>
 						</div>
 					}
+					
 				</div>
 			</div>
 		</div>
 	</div>
+	
 </main>
 <!-- Main Content Area End Here -->

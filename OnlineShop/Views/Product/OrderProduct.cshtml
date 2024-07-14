@@ -14,7 +14,7 @@
         <main class="main-content">
             <div class="checkout-area section-space-y-axis-100">
                 <div class="container">
-                    <form asp-action="OrderProduct" method="post">
+                    <form id="orderForm" asp-action="OrderProduct" method="post">
                         <div class="row">
                             <div class="col-lg-4 col-12">
                                     <div class="checkbox-form">
@@ -148,11 +148,11 @@
                                                                     quantity: @ViewBag.Count},
                                                             success: function (response) {
                                                                 // Format số liệu
-                                                                var formattedAmount = response.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "&nbsp;VNĐ";
+                                                            var formattedAmount = response.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "&nbsp;VNĐ";
 
                                                                 // Cập nhật HTML element
                                                                 $('#orderAmount').html(formattedAmount);
-                                                                console.log(response)
+                                                            document.getElementById('modal_total').innerText = response.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "& VNĐ";
                                                             },
                                                             error: function () {
 
@@ -163,7 +163,7 @@
                                                 $('.nice-select-wide').on('change', function () {
                                                     // Xử lý sự kiện change ở đây
                                                     var selectedValue = $(this).val();
-                                                    console.log('Selected value:', selectedValue);
+                                                  
                                                 });
 
                                             </script>
@@ -184,10 +184,25 @@
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
                     </form>
+           
+            <div id="modal_confirm" class="modal_confirm">
+                <div class="modal_confirm-content">
+                    <span class="modal_confirm-close-btn">&times;</span>
+                    <br />
+                    <div style="flex-direction:column">
+                        <h5 id="modal_text">Bạn chắc chắn muốn đặt hàng với tổng số tiền thanh toán <span id="modal_total" style="color:red">@ViewBag.Total.ToString("#,##0")&nbsp;VNĐ</span> chứ?</h5>
+                    </div>
+                    <br /><br />
+                    <button class="btn btn-primary" id="confirmBtn">Đặt hàng</button>
+                    <button class="btn btn-danger" id="cancelBtn">Hủy</button>
+                </div>
+            </div>
+
                 </div>
             </div>
         </main>

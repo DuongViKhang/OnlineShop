@@ -15,7 +15,7 @@
         <main class="main-content">
             <div class="checkout-area section-space-y-axis-100">
                 <div class="container">
-                    <form asp-action="OrderCart" method="post">
+                    <form id="orderForm" asp-action="OrderCart" method="post">
                         <div class="row">
                             <div class="col-lg-4 col-12">
                                     <div class="checkbox-form">
@@ -154,7 +154,7 @@
 
                                                                 // Cập nhật HTML element
                                                                 $('#orderAmount').html(formattedAmount);
-                                                                console.log(response)
+                                                            document.getElementById('modal_total').innerText = response.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VNĐ";
                                                             },
                                                             error: function () {
                                                                 
@@ -185,8 +185,21 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </form>
+            <div id="modal_confirm" class="modal_confirm">
+                <div class="modal_confirm-content">
+                    <span class="modal_confirm-close-btn">&times;</span>
+                    <br />
+                    <div style="flex-direction:column">
+                        <h5>Bạn chắc chắn muốn đặt hàng với tổng số tiền thanh toán <span id="modal_total" style="color:red">@ViewBag.totalCartItems.ToString("#,##0")&nbsp;VNĐ</span> chứ?</h5>
+                    </div>
+                    <br /><br />
+                    <button class="btn btn-primary" id="confirmBtn">Đặt hàng</button>
+                    <button class="btn btn-danger" id="cancelBtn">Hủy</button>
+                </div>
+            </div>
 
                 </div>
             </div>
