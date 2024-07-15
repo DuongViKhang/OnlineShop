@@ -83,6 +83,14 @@ namespace OnlineShop.Controllers
             }
             //var categoryList = _context.Categories.ToList();
             //ViewData["Categories"] = categoryList;
+            if (TempData["orderSuccess"] != null && (bool)TempData["orderSuccess"])
+            {
+                ViewBag.orderSuccess = true;
+            }
+            if (TempData["addToCartSuccess"] != null && (bool)TempData["addToCartSuccess"])
+            {
+                ViewBag.addToCartSuccess = true;
+            }
             var productVM = new ProductViewModel();
             productVM.productList = productList.ToPagedList(page ?? 1, 6);
             ViewBag.Sort = new List<String> { "Mới nhất", "Giá lớn nhất", "Giá thấp nhất" };
@@ -317,7 +325,8 @@ namespace OnlineShop.Controllers
                     IsPay = 0,
                     Date = DateTime.Now,
                     VoucherId = voucheritem!=null?voucheritem.VoucherId:0,
-                    IsDeleted = 0
+                    IsDeleted = 0,
+                    PaymentMethod="Thanh toán khi nhận hàng"
                 };
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
@@ -333,6 +342,7 @@ namespace OnlineShop.Controllers
                 product1.Quantity -= count;
                 _context.OrderItems.Add(orderItem);
                 await _context.SaveChangesAsync();
+                TempData["orderSuccess"] = true;
                 return RedirectToAction("Index", "Product");
             }
             else
@@ -340,6 +350,9 @@ namespace OnlineShop.Controllers
                 HttpContext.Session.SetString("receiverName", receiver);
                 HttpContext.Session.SetString("receiverEmail", email);
                 HttpContext.Session.SetString("receiverPhone", phone);
+                HttpContext.Session.SetString("orderProduct", productId.ToString());
+                HttpContext.Session.SetString("orderCount", count.ToString());
+                HttpContext.Session.SetString("orderStyle", styleId.ToString());
                 HttpContext.Session.SetString("receiverAddress", address);
                 HttpContext.Session.SetString("receiverVoucher", Convert.ToString(voucherSelected));
                 var url = URLPayment(int.Parse(paymentOption), voucherSelected, productId, count);
@@ -476,6 +489,10 @@ namespace OnlineShop.Controllers
 
                 int voucherId = Convert.ToInt32(HttpContext.Session.GetString("receiverVoucher"));
 
+                int productId = Convert.ToInt32(HttpContext.Session.GetString("orderProduct"));
+                int count = Convert.ToInt32(HttpContext.Session.GetString("orderCount"));
+                int styleId = Convert.ToInt32(HttpContext.Session.GetString("orderStyle"));
+
                 bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, vnp_HashSecret);
                 if (checkSignature)
                 {
@@ -499,28 +516,29 @@ namespace OnlineShop.Controllers
                                 Phone = phone,
                                 Address = address,
                                 StatusId = 1,
-                                ShipperId = 1,
                                 IsPay = 1,
                                 VoucherId = voucheritem != null ? voucheritem.VoucherId : 0,
                                 Date = DateTime.Now,
-                                IsDeleted = 0
+                                IsDeleted = 0,
+                                PaymentMethod="Thanh toán online"
                             };
                             _context.Orders.Add(orderNew);
                             await _context.SaveChangesAsync();
                             int newOrderId = orderNew.OrderId;
 
-                            foreach (CartItem item in lstNew)
-                            {
                                 OrderItem orderItem = new OrderItem
                                 {
                                     OrderId = newOrderId,
-                                    ProductId = item.ProductId,
-                                    Count = item.Count,
+                                    ProductId = productId,
+                                    Count = count,
+                                    StyleId = styleId,
                                 };
                                 _context.OrderItems.Add(orderItem);
-                                _context.CartItems.Remove(item);
+                                var product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
+                                product.Quantity -=count;
+                                _context.Update(product); 
                                 await _context.SaveChangesAsync();
-                            }
+
                         }
                         ViewBag.InnerText = "Giao dịch được thực hiện thành công. Cảm ơn quý khách đã sử dụng dịch vụ";
                         //log.InfoFormat("Thanh toan thanh cong, OrderId={0}, VNPAY TranId={1}", orderId, vnpayTranId);
@@ -561,16 +579,29 @@ namespace OnlineShop.Controllers
         [HttpPost]
 		public IActionResult CreateComment(string content, int rating, int productId, int userId)
 		{
-            var commnent = new Comment();
-            commnent.UserId = userId;
-            commnent.ProductId = productId;
-            commnent.Content = content;
-            commnent.Rate = rating;
-            commnent.Date = DateTime.Now;
-            commnent.IsDeleted = 0;
-            _context.Comments.Add(commnent);
-            _context.SaveChanges();
-			return RedirectToAction("Detail", "Product", new { id =productId, mess="" });
+            try
+            {
+                var product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
+                var commnent = new Comment();
+                commnent.UserId = userId;
+                commnent.ProductId = productId;
+                commnent.Content = content;
+                commnent.Rate = rating;
+                commnent.Date = DateTime.Now;
+                commnent.IsDeleted = 0;
+                if(product.Rating > 0)
+                {
+                    product.Rating = (product.Rating + rating) / 2;
+                }
+                _context.Products.Update(product);
+                _context.Comments.Add(commnent);
+                _context.SaveChanges();
+                return RedirectToAction("Detail", "Product", new { id = productId, mess = "" });
+            }catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
 		}
 	}
 }

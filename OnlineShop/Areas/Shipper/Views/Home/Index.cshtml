@@ -7,13 +7,17 @@
     Layout = "~/Areas/Shipper/Views/Shared/_ShipperLayout.cshtml";
 }
 
-<h2>Danh sách đơn hàng</h2>
+<h2>Danh sách đơn hàng có thể nhận</h2>
 
-<div style="max-width:400px;flex-direction:row">
+<div style="max-width:450px;flex-direction:row">
     <form asp-action="Index" asp-controller="Home" method="get">
-        <input style="width:300px"  name="keyword" type="text" placeholder="Tìm kiếm theo địa chỉ hoặc sđt">
-        <button class="btn btn-primary" type="submit">Tim</button>
+        <input style="width:350px"  name="keyword" type="text" placeholder="Tìm kiếm theo tên người nhận, địa chỉ hoặc sđt">
+        <button class="btn btn-primary" type="submit">Tìm</button>
     </form>
+    @if(ViewBag.success != null)
+    {
+        <h2 class="text-success">@ViewBag.success</h2>
+    }
 </div>
 <br />
 @if (Model.Count() == 0)
@@ -60,14 +64,67 @@
                     @Html.DisplayFor(modelItem => item.Status.StatusName)
                 </td>
                     <td>
-                        
-                        <a class="btn btn-success" asp-controller="Home" asp-action="ReceiveDelivery" asp-route-id="@item.OrderId">Nhận giao hàng</a>
+
+                    <a id="confirm_link" class="btn btn-success" asp-controller="Home" asp-action="ReceiveDelivery" asp-route-id="@item.OrderId" data-id="@item.OrderId">Nhận giao hàng</a>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const confirmLink = document.getElementById('confirm_link');
+                            var id = confirmLink.getAttribute('data-id')
+                            confirmLink.onclick = function (event) {
+                                event.preventDefault();
+                                const href = confirmLink.getAttribute('href');
+
+                                Swal.fire({
+                                    title: 'Xác nhận?',
+                                    text: "Bạn chắc nhận giao đơn hàng này chứ?",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    cancelButtonText: 'Hủy',
+                                    confirmButtonText: 'Chắc chắn!'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        fetch(href, {
+                                            method: 'POST'
+                                        })
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    Swal.fire({
+                                                        title: 'Thành công!',
+                                                        text: 'Bạn đã nhận giao đơn hàng #'+id,
+                                                        icon: 'success',
+                                                        confirmButtonText: 'OK',
+                                                        timer: 2000,
+                                                        timerProgressBar: true
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            location.reload();
+                                                        }
+                                                    });
+                                                } else {
+                                                    Swal.fire({
+                                                        title: 'Thất bại!',
+                                                        text: 'Có lỗi xảy ra',
+                                                        icon: 'error',
+                                                        confirmButtonText: 'OK',
+                                                        timer: 2000,
+                                                        timerProgressBar: true
+                                                    });
+                                                }
+                                            });
+                                    }
+                                });
+                            }
+                        });
+                    </script>
                     <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a>
                     </td>
             </tr>
         }
     </tbody>
 </table>
+
 @Html.PagedListPager((IPagedList) Model, page => Url.Action("Index", new {page = page }),
 new PagedListRenderOptions {
         LiElementClasses = new string[] {"page-item"},

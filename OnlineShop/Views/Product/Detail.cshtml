@@ -77,13 +77,11 @@
                                                     <p style="padding-right:17px;">Đánh giá:</p>
                                                 </li>
                                                 @{
-                                                    var i = Model.Rating;
-                                                                                                                                                @while (i > 0)
-                                                    {
-                                                                                                                                                    <li><i class="pe-7s-star"></i></li>
-                                                        i--;
+
+                                                            <span>@Model.Rating <i class="pe-7s-star"></i></span>
+                                                        
                                                     }
-                                                }
+                                                
                                             </ul>
                                         </div>
                                     </div>
@@ -816,10 +814,11 @@
             // Nút Previous
             const prevButton = document.createElement('a');
             prevButton.href = '#';
+            prevButton.id = 'prevButton'
             prevButton.className = 'page-link';
-            prevButton.textContent = 'Previous';
+            prevButton.textContent = 'Trang trước';
             prevButton.addEventListener('click', function () {
-                showPreviousPage();
+                showPreviousPage(currentPage, comments);
             });
             paginationContainer.appendChild(prevButton);
 
@@ -831,20 +830,35 @@
             // Tạo các liên kết phân trang cho các trang hiển thị
             for (let i = startPage; i <= endPage; i++) {
                 const pageItem = document.createElement('span');
-                pageItem.className = 'page-item';
-
+                pageItem.className = 'page-item '+i;
+                pageItem.id = 'page-item ' + i;
                 const pageLink = document.createElement('a');
                 pageLink.href = '#';
                 pageLink.className = 'page-link';
                 pageLink.textContent = i;
-
+                if(i==1){
+                    pageItem.className = pageItem.className + " active";
+                      document.getElementById('prevButton').hidden = true;
+                }
                 pageLink.addEventListener('click', function () {
                     var item = document.getElementsByClassName('page-item active');
                     if (item != null) {
-                        document.getElementsByClassName('page-item active')[0].className = 'page-item';
+                        document.getElementsByClassName('page-item active')[0].className = 'page-item ' +currentPage;
                     }
-                    pageItem.className = 'page-item active';
-                    showComments(i);
+
+                    pageItem.className = pageItem.className+" active";
+                    showComments(i, comments);
+                    updateCurrentPage(i);
+                    if (i == totalPages) {
+                        document.getElementById('nextButton').hidden = true;
+                    } else {
+                        document.getElementById('nextButton').hidden = false;
+                    }
+                    if (i == 1) {
+                        document.getElementById('prevButton').hidden = true;
+                    } else {
+                        document.getElementById('prevButton').hidden = false;
+                    }
                 });
                 pageItem.appendChild(pageLink);
                 paginationContainer.appendChild(pageItem);
@@ -852,11 +866,12 @@
 
             // Nút Next
             const nextButton = document.createElement('a');
+            nextButton.id = 'nextButton'
             nextButton.href = '#';
             nextButton.className = 'page-link';
-            nextButton.textContent = 'Next';
+            nextButton.textContent = 'Trang sau';
             nextButton.addEventListener('click', function () {
-                showNextPage();
+                showNextPage(currentPage, totalPages, comments)
             });
             paginationContainer.appendChild(nextButton);
 
@@ -867,21 +882,53 @@
         });
        
         // Hàm để tạo các nút phân trang
-       
+        function updateCurrentPage(page){
+            currentPage = page;
+        }
+
+        function updatePageItem(){
+            var item = document.getElementsByClassName('page-item '+ currentPage+ ' active');
+            if (item != null) {
+                item = 'page-item ' + currentPage;
+                document.getElementsByClassName('page-item ' + currentPage + 1).className = 'page-item ' + currentPage + ' active';
+            }
+        }
         // Hàm để hiển thị trang trước đó
-        function showPreviousPage() {
+        function showPreviousPage(currentPage, comments) {
             if (currentPage > 1) {
                 currentPage--;
-                showComments(currentPage);
+                document.getElementById('nextButton').hidden = false;
+                if (currentPage == 1) {
+                    document.getElementById('prevButton').hidden = true;
+                }
+                showComments(currentPage, comments);
+                var item = document.getElementById('page-item ' + (currentPage + 1));
+                if (item != null) {
+                    item.className = 'page-item ' + (currentPage+1);
+                    document.getElementById('page-item ' + currentPage).className = 'page-item ' + currentPage + ' active';
+                }
+                updateCurrentPage(currentPage)
             }
         }
 
         // Hàm để hiển thị trang kế tiếp
-        function showNextPage() {
+        function showNextPage(currentPage, totalPages,comments) {
             if (currentPage < totalPages) {
                 currentPage++;
-                showComments(currentPage);
+                if(currentPage==totalPages){
+                    document.getElementById('nextButton').hidden = true;
+                }
+                document.getElementById('prevButton').hidden = false;
+                showComments(currentPage, comments);
+                var item = document.getElementById('page-item ' + (currentPage-1));
+                if (item != null) {
+                    item.className = 'page-item ' + (currentPage-1);
+                    var i = document.getElementById('page-item ' + currentPage);
+                    document.getElementById('page-item ' + currentPage).className = 'page-item ' + currentPage + ' active';
+                }
+                updateCurrentPage(currentPage)
             }
+            
         }
 
        
