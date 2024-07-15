@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="~/assets/css/vendor/font-awesome.min.css" />
     <link rel="stylesheet" href="~/assets/css/vendor/Pe-icon-7-stroke.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- Plugin CSS (Global Plugins Files) -->
     <link rel="stylesheet" href="~/assets/css/plugins/animate.css">
     <link rel="stylesheet" href="~/assets/css/plugins/jquery-ui.min.css">
@@ -36,6 +37,7 @@
 
     <!-- Style CSS -->
     <link rel="stylesheet" href="~/assets/css/style.css">
+
     <!-- <link rel="stylesheet" href="~/assets/css/style.min.css"> -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -535,24 +537,34 @@
 
         <!-- Begin Footer Area -->
         <div class="footer-area">
-            <div class="footer-top section-space-y-axis-100 text-black" data-bg-color="#e5ddcc">
+            <div class="footer-top  text-black" style="padding-top:30px;padding-bottom:30px" data-bg-color="#e5ddcc">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-3 col-md-6">
+                        <!-- Column 1 -->
+                        <div class="col-lg-4 col-md-6">
                             <div class="widget-item">
                                 <div class="footer-logo pb-4">
                                     <a href="@Url.Action("Index", "Home")">
                                         <img src="~/assets/images/logo/dark.png" alt="Logo">
                                     </a>
                                 </div>
-                                <p class="short-desc mb-2">Website bán hàng tạo bởi:  </p>
-                                <div style="margin-bottom:10px;margin-left:30px">
-                                    <ul style="list-style:circle">
-                                        <li>Dương Vĩ Khang</li>
-                                        <li>Nguyễn Thành Lợi</li>
-                                    </ul>
-                                </div>
-                                <div class="widget-contact-info pb-8">
+                               
+                            </div>
+                        </div>
+                        <!-- Column 2 -->
+                        <div class="col-lg-4 col-md-6">
+                            <div class="widget-item">
+                                <p class="short-desc mb-2">Website bán hàng tạo bởi:</p>
+                                <ul style="list-style:circle">
+                                    <li style="padding-left: 20px; justify-content:center"> <i class="pe-7s-user"></i> Dương Vĩ Khang</li>
+                                    <li style="padding-left: 20px;"> <i class="pe-7s-user"></i> Nguyễn Thành Lợi</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Column 3 -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="widget-item">
+                                <div class="widget-contact-info">
                                     <ul>
                                         <li>
                                             <i class="pe-7s-map-marker"></i>
@@ -560,7 +572,7 @@
                                         </li>
                                         <li>
                                             <i class="pe-7s-mail"></i>
-                                            <a href="mailto://ute.onlineshop.project@gmail.com">ute.onlineshop.project@gmail.com</a>
+                                            <a href="mailto:ute.onlineshop.project@gmail.com">ute.onlineshop.project@gmail.com</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -572,15 +584,17 @@
             <div class="footer-bottom py-3" data-bg-color="#bac34e">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-12 text-center">
                             <div class="copyright">
-                                <span class="copyright-text text-white">© 2024 OnlineShope Made with <i class="fa fa-heart text-danger"></i> by  <a href="https://hasthemes.com/" target="_blank">Nhóm 9</a> </span>
+                                <span class="copyright-text text-white">© 2024 OnlineShop Made with <i class="fa fa-heart text-danger"></i> by <a href="https://hasthemes.com/" target="_blank" class="text-white">Khang-Lợi</a></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
         <!-- Footer Area End Here -->
 
         <!-- Begin Scroll To Top -->
@@ -611,7 +625,7 @@
     <script src="~/assets/js/plugins/jquery.nice-select.js"></script>
     <script src="~/assets/js/plugins/parallax.min.js"></script>
     <script src="~/assets/js/plugins/jquery.magnific-popup.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Minify Version -->
     <!-- <script src="~/assets/js/vendor.min.js"></script> -->
     <!-- <script src="~/assets/js/plugins.min.js"></script> -->

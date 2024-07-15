@@ -110,41 +110,50 @@ img {
 }
 
 /* ---Section Space--- */
-.section-space{
-    &-top{
-        &-100{
+.section-space {
+    &-top {
+        &-100 {
             padding-top: 100px;
         }
-        &-95{
+
+        &-95 {
             padding-top: 95px;
         }
-        &-90{
+
+        &-90 {
             padding-top: 90px;
         }
-        &-85{
+
+        &-85 {
             padding-top: 85px;
         }
-        &-80{
+
+        &-80 {
             padding-top: 80px;
         }
-        &-75{
+
+        &-75 {
             padding-top: 75px;
         }
-        &-55{
+
+        &-55 {
             padding-top: 55px;
         }
     }
-    &-y-axis{
-        &-100{
-            padding-top: 100px;
-            padding-bottom: 100px;
+
+    &-y-axis {
+        &-100 {
+            padding-top: 20px;
+            padding-bottom:20px;
         }
     }
-    &-bottom{
-        &-100{
+
+    &-bottom {
+        &-100 {
             padding-bottom: 100px;
         }
-        &-95{
+
+        &-95 {
             padding-bottom: 95px;
         }
     }

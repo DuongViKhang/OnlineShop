@@ -31,12 +31,19 @@ namespace OnlineShop.Hubs
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            // Xóa kết nối khi người dùng ngắt kết nối
-            var userId = _httpContextAccessor.HttpContext.Session.GetString("userId");
-            if (_connections.ContainsKey(userId))
+            // Kiểm tra HttpContext và Session có null không
+            if (_httpContextAccessor.HttpContext != null &&
+                _httpContextAccessor.HttpContext.Session != null)
             {
-                _connections.Remove(userId);
+                var userId = _httpContextAccessor.HttpContext.Session.GetString("userId");
+
+                // Kiểm tra userId có null không
+                if (!string.IsNullOrEmpty(userId) && _connections.ContainsKey(userId))
+                {
+                    _connections.Remove(userId);
+                }
             }
+
 
             return base.OnDisconnectedAsync(exception);
         }

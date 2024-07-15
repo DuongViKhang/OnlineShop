@@ -4,7 +4,7 @@
     const closeBtn = document.getElementsByClassName('modal_confirm-close-btn')[0];
     const confirmBtn = document.getElementById('confirmBtn');
     const cancelBtn = document.getElementById('cancelBtn');
-    const cancelOrderLink = document.getElementById('cancelOrderLink');
+    const confirm_link = document.getElementById('confirm_link');
     let href;
     if (form != null) {
         form.onsubmit = function (event) {
@@ -19,10 +19,12 @@
 
     }
     
-    if (cancelOrderLink != null) {
-        cancelOrderLink.onclick = function (event) {
+    if (confirm_link != null) {
+        confirm_link.onclick = function (event) {
             event.preventDefault();
             href = cancelOrderLink.getAttribute('href');
+            var dataId = confirm_link.getAttribute('data-id');
+            document.getElementById('modal_text').textContent = "Bạn chắc chắn nhận giao đơn hàng #"+dataId+ " chứ?"
             modal.style.display = 'block';
         }
 

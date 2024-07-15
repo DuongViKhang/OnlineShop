@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using X.PagedList;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace OnlineShop.Areas.Shipper.Controllers
 {
@@ -76,12 +77,13 @@ namespace OnlineShop.Areas.Shipper.Controllers
            
             if (keyword != null)
             {
-                orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.ShipperId == userId && (o.Address.ToLower().Contains(keyword.ToLower()) || o.Phone.ToLower().Contains(keyword.ToLower()))).OrderByDescending(o => o.Date);
+                orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.ShipperId == userId && (o.Address.ToLower().Contains(keyword.ToLower()) || o.Phone.ToLower().Contains(keyword.ToLower()) || o.Receiver.ToLower().Contains(keyword.ToLower()))).OrderByDescending(o => o.StatusId == 2).ThenByDescending(o => o.Date);
             }
             else
             {
-                orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.ShipperId == userId).OrderByDescending(o => o.Date);
+                orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.ShipperId == userId).OrderByDescending(o=>o.StatusId==2).ThenByDescending(o => o.Date);
             }
+
             return View(orderList.ToPagedList(page ?? 1, 5));
         }
         public async Task<IActionResult> Details(int? id)
@@ -137,22 +139,23 @@ namespace OnlineShop.Areas.Shipper.Controllers
             ViewBag.lst = lst;
             return View(order);
         }
-
+        [HttpPost]
         public async Task<IActionResult> ReceiveDelivery(int id)
         {
             var order = await _context.Orders.FindAsync(id);
             order.StatusId = 2;
-
             order.ShipperId = int.Parse(HttpContext.Session.GetString("userId"));
             _context.Update(order);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ReceiveOrderList));
+            ViewBag.success = "Nhận giao đơn hàng thành công";
+            return RedirectToAction(nameof(Index));
         }
-
+        [HttpPost]
         public async Task<IActionResult> Delivered(int id)
         {
             var order = await _context.Orders.FindAsync(id);
             order.StatusId = 6;
+            order.IsPay = 1;
             _context.Update(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ReceiveOrderList));
@@ -251,6 +254,7 @@ namespace OnlineShop.Areas.Shipper.Controllers
                     }
                     _context.Update(user);
                     await _context.SaveChangesAsync();
+                    return Json(new { success = true });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -263,9 +267,8 @@ namespace OnlineShop.Areas.Shipper.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Profile));
             }
-            return View(user);
+            return Json(new { success = false, message = "Dữ liệu không hợp lệ." });
         }
     }
 }

@@ -76,7 +76,8 @@ namespace OnlineShop.Controllers
 					_context.CartItems.Add(cartItem);
 				}
 				_context.SaveChangesAsync();
-				return RedirectToAction("Index", "Product");
+                TempData["addToCartSuccess"] = true;
+                return RedirectToAction("Index", "Product");
 			}
 			catch (Exception ex)
 			{
@@ -355,11 +356,11 @@ namespace OnlineShop.Controllers
                     Phone = phone,
                     Address = address,
                     StatusId = 1,
-                    ShipperId = 1,
                     IsPay = 0,
                     Date = DateTime.Now,
                     VoucherId= voucheritem != null ? voucheritem.VoucherId : 0,
-                    IsDeleted = 0
+                    IsDeleted = 0,
+                    PaymentMethod="Thanh toán khi nhận hàng"
                 };
                 
 				_context.Orders.Add(order);
@@ -367,7 +368,7 @@ namespace OnlineShop.Controllers
                 int newOrderId = order.OrderId;
                 var lst = _context.CartItems.Where(n => n.Cart.UserId == userId && n.IsDeleted == 0).ToList();
                 foreach (CartItem item in lst)
-                {
+                {   
                     OrderItem orderItem = new OrderItem
                     {
                         OrderId = newOrderId,
@@ -377,6 +378,9 @@ namespace OnlineShop.Controllers
 					};
                     _context.OrderItems.Add(orderItem);
                     _context.CartItems.Remove(item);
+                    var product = _context.Products.FirstOrDefault(p => p.ProductId == item.ProductId);
+                    product.Quantity -= item.Count;
+                    _context.Products.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 return RedirectToAction("Index", "Product");
@@ -478,11 +482,11 @@ namespace OnlineShop.Controllers
                                 Phone = phone,
                                 Address = address,
                                 StatusId = 1,
-                                ShipperId = 1,
                                 IsPay = 1,
                                 VoucherId = voucheritem != null ? voucheritem.VoucherId : 0,
                                 Date = DateTime.Now,
-                                IsDeleted = 0
+                                IsDeleted = 0,
+                                PaymentMethod= "Thanh toán online"
                             };
                             _context.Orders.Add(orderNew);
                             await _context.SaveChangesAsync();
@@ -498,6 +502,9 @@ namespace OnlineShop.Controllers
                                 };
                                 _context.OrderItems.Add(orderItem);
                                 _context.CartItems.Remove(item);
+                                var product = _context.Products.FirstOrDefault(p => p.ProductId == item.ProductId);
+                                product.Quantity -= item.Count;
+                                _context.Products.Update(product);
                                 await _context.SaveChangesAsync();
                             }
                         }                      

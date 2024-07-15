@@ -88,7 +88,7 @@
                                         class="imageAvatar"
                                           alt="@Model.UserName" />
                                 </div>
-                                <form asp-action="Profile" asp-controller="Home" class="myaccount-form" enctype="multipart/form-data" method="post">
+                                <form id="myaccount-form" asp-action="Profile" asp-controller="Home" class="myaccount-form" enctype="multipart/form-data" method="post">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <input type="hidden" asp-for="UserId" />
                                     <input type="hidden" asp-for="Email" />
@@ -142,6 +142,59 @@
         </div>
 </div>
         </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('myaccount-form');
+
+        form.onsubmit = function (event) {
+            event.preventDefault(); // Ngăn chặn hành vi submit mặc định
+
+            // Sử dụng FormData để lấy dữ liệu từ form
+            const formData = new FormData(form);
+
+            // Sử dụng Fetch API để gửi form
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: 'Các thay đổi đã được lưu thành công.',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then((result) => {
+                            if (result.dismiss === Swal.DismissReason.timer || result.isConfirmed) {
+                                location.reload(); // Tải lại trang sau khi đóng thông báo
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Thất bại!',
+                            text: data.message || 'Có lỗi xảy ra trong quá trình lưu thay đổi.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Thất bại!',
+                        text: 'Có lỗi xảy ra trong quá trình lưu thay đổi.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+        };
+    });
+</script>
 <!-- Main Content Area End Here -->
 <!-- Begin Scroll To Top -->
 <a class="scroll-to-top" href="">
