@@ -23,7 +23,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminOrders
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int? page, string statusOrders, int? paymentStatus, string keyword)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -37,7 +37,32 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User).OrderByDescending(o => o.Date);
+            var onlineShopContext = _context.Orders
+                                    .Include(o => o.Status)
+                                    .Include(o => o.User)
+                                    .AsQueryable();
+            if (statusOrders != null)
+            {
+                ViewBag.statusOrder = statusOrders;
+                onlineShopContext = onlineShopContext.Where(n => n.Status.StatusName == statusOrders);
+            }
+            if (paymentStatus != null)
+            {
+                ViewBag.paymentStatus = "Chưa thanh toán";
+                if (paymentStatus == 1)
+                {
+                    ViewBag.paymentStatus = "Đã thanh toán";
+                }
+                 
+                onlineShopContext = onlineShopContext.Where(n => n.IsPay == paymentStatus);
+            }
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                onlineShopContext = onlineShopContext.Where(n => n.OrderId.ToString().Contains(keyword) || n.User.Email.Contains(keyword) || n.Date.ToString().Contains(keyword));
+            }
+
+            onlineShopContext = onlineShopContext.OrderByDescending(o => o.StatusId == 1)
+                                                 .ThenByDescending(o => o.Date);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 

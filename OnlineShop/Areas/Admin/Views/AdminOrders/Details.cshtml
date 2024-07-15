@@ -142,13 +142,7 @@
         <br /><br />
         <a asp-action="Index">Trở về danh sách</a>
     }
-    @if(Model.Status.StatusName == "Đang giao")
-    {
-        <a asp-action="Update" asp-route-id="@Model.OrderId" class="btn btn-primary">Đã giao</a>
-        <br /><br />
-        <a asp-action="Index">Trở về danh sách</a>
-    }
-    @if(Model.Status.StatusName == "Đã nhận" || Model.Status.StatusName == "Từ chối"){
+    else {
         <a asp-action="Index">Trở về danh sách</a>
     }
 </div>

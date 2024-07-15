@@ -8,6 +8,77 @@
 }
 
 <h2>Quản lý đơn hàng</h2>
+<div class="row">
+    <div class="col-xl-2 col-xxl-5 d-flex">
+		<div class="col mt-0">
+			<select class="form-select" style="width: 200px;" id="statusOrders">
+                <option class="option" hidden>@ViewBag.statusOrder</option>
+                @if(ViewBag.statusOrder == null)
+                {
+                    <option class="option" hidden selected>Trạng thái đơn hàng</option>
+                }
+                <option class="option" value="Đang xử lý">Đang xử lý</option>
+                <option class="option" value="Đã xác nhận">Đã xác nhận</option>
+                <option class="option" value="Đang giao">Đang giao</option>
+                <option class="option" value="Đã giao">Đã giao</option>
+                <option class="option" value="Đã nhận">Đã nhận</option>
+                <option class="option" value="Đã hủy">Đã giao</option>
+			</select>
+		</div>
+    </div>
+    <div class="col-xl-2 col-xxl-5 d-flex">
+		<div class="col mt-0">
+			<select class="form-select" style="width: 200px; margin-left:60px;" id="paymentStatus">
+                <option class="option" hidden>@ViewBag.paymentStatus</option>
+                @if(ViewBag.paymentStatus == null)
+                {
+                    <option class="option" hidden selected>Tình trạng thanh toán</option>
+                }
+                <option class="option" value="0">Chưa thanh toán</option>
+                <option class="option" value="1">Đã thanh toán</option>
+			</select>
+		</div>
+    </div>
+    <div class="col-xl-2 col-xxl-5 d-flex">
+		<div class="col mt-0" style="margin-left:120px;">
+			<input class="form-control" style="width:380px;" id="keyword" type="text" placeholder="Tìm kiếm đơn hàng theo ID, email hoặc ngày đặt">
+		</div>
+    </div>
+    <div class="col-xl-2 col-xxl-5 d-flex">
+            <button class="form-control" style="margin-left:350px;" id="searchButton" type="submit"><i class="pe-7s-search" data-feather="search"></i></button>
+    </div>
+</div>
+<script>
+    document.getElementById('searchButton').addEventListener('click', function() {
+        var statusOrders = document.getElementById('statusOrders').value;
+        var paymentStatus = document.getElementById('paymentStatus').value;
+        var keyword = document.getElementById('keyword').value;
+
+        var url = '@Url.Action("Index", "AdminOrders")' + '?';
+        var params = [];
+
+        if (statusOrders !== "Trạng thái đơn hàng") {
+            params.push('statusOrders=' + encodeURIComponent(statusOrders));
+        }
+
+        if (paymentStatus !== "Tình trạng thanh toán") {
+            params.push('paymentStatus=' + encodeURIComponent(paymentStatus));
+        }
+
+        if (keyword.trim() !== "") {
+            params.push('keyword=' + encodeURIComponent(keyword));
+        }
+
+        url += params.join('&');
+
+        window.location.href = url;
+    });
+
+    // Optional: To prevent form submission if the search button is inside a form
+    document.getElementById('searchButton').addEventListener('click', function(event) {
+        event.preventDefault();
+    });
+</script>
 
 <br />
 <table class="table">
@@ -29,7 +100,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.User.UserName)
@@ -62,7 +133,7 @@
                 </td>
             }
             </tr>
-}
+    }
     </tbody>
 </table>
 @Html.PagedListPager((IPagedList) Model, page => Url.Action("Index", new {page = page }), 
