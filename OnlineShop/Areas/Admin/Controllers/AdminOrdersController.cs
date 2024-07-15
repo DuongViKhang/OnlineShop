@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using OnlineShop.Models;
 using X.PagedList;
 using OnlineShop.ViewModels;
+using System.Globalization;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -48,17 +49,26 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (paymentStatus != null)
             {
-                ViewBag.paymentStatus = "Chưa thanh toán";
                 if (paymentStatus == 1)
                 {
                     ViewBag.paymentStatus = "Đã thanh toán";
                 }
-                 
+                else if (paymentStatus == 0)
+                {
+                    ViewBag.paymentStatus = "Chưa thanh toán";
+                }
                 onlineShopContext = onlineShopContext.Where(n => n.IsPay == paymentStatus);
             }
             if (!string.IsNullOrEmpty(keyword))
             {
-                onlineShopContext = onlineShopContext.Where(n => n.OrderId.ToString().Contains(keyword) || n.User.Email.Contains(keyword) || n.Date.ToString().Contains(keyword));
+                ViewBag.keyword = keyword;
+                var cultureInfo = new CultureInfo("de-DE");
+                var dt = DateTime.Parse(keyword, cultureInfo);
+                onlineShopContext = onlineShopContext.Where(n => n.OrderId.ToString().Contains(keyword) ||
+                                                                    n.User.Email.Contains(keyword) ||
+                                                                    (n.Date.Value.Day == dt.Day &&
+                                                                    n.Date.Value.Month == dt.Month &&
+                                                                    n.Date.Value.Year == dt.Year));
             }
 
             onlineShopContext = onlineShopContext.OrderByDescending(o => o.StatusId == 1)
