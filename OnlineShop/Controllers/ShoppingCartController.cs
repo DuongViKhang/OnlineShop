@@ -110,8 +110,6 @@ namespace OnlineShop.Controllers
 			{
 				if (cartItem != null)
 				{
-					product.Quantity -= count;
-					_context.Update(product);
 					cartItem.Count = count;
 					_context.Update(cartItem);
 				}
