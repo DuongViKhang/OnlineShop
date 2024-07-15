@@ -42,9 +42,6 @@ namespace OnlineShop.Controllers
 				string mess = "Thêm vào giỏ hàng thất bại";
 				return RedirectToAction("Detail", "Product", new { id = productId, mess = mess });
             }
-			Product product = _context.Products.FirstOrDefault(n => n.ProductId == productId);
-			product.Quantity -= count;
-			_context.Update(product);
 			int userId;
 			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
 			if (!isNum)
@@ -100,7 +97,7 @@ namespace OnlineShop.Controllers
 			if (count < 1)
 			{
 				_context.CartItems.Remove(cartItem);
-				_context.SaveChangesAsync();
+				_context.SaveChanges();
 				return Ok();
 			}
 			Product product = _context.Products.FirstOrDefault(n => n.ProductId == cartItem.ProductId);
@@ -113,13 +110,11 @@ namespace OnlineShop.Controllers
 			{
 				if (cartItem != null)
 				{
-					product.Quantity -= count;
-					_context.Update(product);
 					cartItem.Count = count;
 					_context.Update(cartItem);
 				}
 
-				_context.SaveChangesAsync();
+				_context.SaveChanges();
 				return Ok();
 			}
 			catch (Exception ex)
@@ -162,7 +157,10 @@ namespace OnlineShop.Controllers
 			ViewBag.quantity = cartItems.Count;
 			ViewBag.cartItems = cartItems;
 			ViewBag.totalCartItems = cartItems.Sum(n => n.Total);
-            
+            if (TempData["quantityError"] != null)
+            {
+                ViewBag.quantityError = _context.Products.FirstOrDefault(p=>p.ProductId==(int)TempData["quantityError"]);
+            }
             return View();
 		}
 
@@ -200,11 +198,22 @@ namespace OnlineShop.Controllers
 							Image = s2.Product.Image,
 							PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
 							ProductName = s2.Product.ProductName,
+                            ProductId = s2.Product.ProductId,
 							Count = s2.Count,
 							Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
 							StyleName = s2.Style.StyleName
 						};
-			List<OrderCartViewModel> cartItems = query.ToList();
+            foreach (var item in query.ToList())
+            {
+                var pro = _context.Products.FirstOrDefault(p => p.ProductId == item.ProductId);
+                if (pro.Quantity < item.Count)
+                {
+                    TempData["quantityError"] = pro.ProductId;
+                    return RedirectToAction("Index");
+                }
+            }
+
+            List<OrderCartViewModel> cartItems = query.ToList();
 			User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
 			var orderVM = new OrderVIewModel();
 			ViewBag.username = user.UserName;
@@ -341,6 +350,7 @@ namespace OnlineShop.Controllers
 			
 			if (paymentOption == "4")
 			{
+               
 				var voucheritem = _context.VoucherItems.FirstOrDefault(v => v.VoucherItemId == voucherSelected);
 				if (voucherSelected > 0 && voucheritem != null)
 				{
