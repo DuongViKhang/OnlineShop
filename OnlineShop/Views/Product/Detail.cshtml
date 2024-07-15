@@ -76,12 +76,15 @@
                                                 <li>
                                                     <p style="padding-right:17px;">Đánh giá:</p>
                                                 </li>
-                                                @{
+                                                @if(Model.Rating==0){
 
-                                                            <span>@Model.Rating <i class="pe-7s-star"></i></span>
-                                                        
-                                                    }
-                                                
+                                                    <span>Chưa có đánh giá</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@Model.Rating <i class="pe-7s-star"></i></span>
+                                                }
+
                                             </ul>
                                         </div>
                                     </div>
@@ -838,7 +841,7 @@
                 pageLink.textContent = i;
                 if(i==1){
                     pageItem.className = pageItem.className + " active";
-                      document.getElementById('prevButton').hidden = true;
+                    document.getElementById('prevButton').hidden = true;
                 }
                 pageLink.addEventListener('click', function () {
                     var item = document.getElementsByClassName('page-item active');

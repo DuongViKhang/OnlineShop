@@ -33,15 +33,17 @@
             modal.style.display = 'none';
         }
     }
-    closeBtn.onclick = function () {
-        modal.style.display = 'none';
-    }
+    if (form != null || confirm_link != null) {
+        closeBtn.onclick = function () {
+            modal.style.display = 'none';
+        }
 
-   
-    cancelBtn.onclick = function () {
-        modal.style.display = 'none';
-    }
 
+        cancelBtn.onclick = function () {
+            modal.style.display = 'none';
+        }
+
+    }
     window.onclick = function (event) {
         if (event.target == modal) {
             modal.style.display = 'none';

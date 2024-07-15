@@ -37,7 +37,7 @@
 															<img src="~/upload/images/product/@item.Image" alt="@item.ProductName" style="border-radius:5px; max-height:100px; max-width: 100px;">
 														</a>
 													</td>
-													<td class="product-name"><a href="#">@item.ProductName</a></td>
+													<td class="product-name"><a href="@Url.Action("Detail", "Product", new {id=item.ProductId})">@item.ProductName</a></td>
 													@if(item.StyleName != null){
 														<td class="product-name"><a href="#">@item.StyleName</a></td>
 													}	
@@ -66,6 +66,25 @@
 										}
 									</tbody>
 								@section Scripts {
+								<script>
+									
+											$(document).ready(function () {
+												@if (ViewBag.quantityError != null)
+													{
+													<text>
+													Swal.fire({
+														title: 'Có lỗi xảy ra!',
+														text: 'Sản phẩm ' + '@ViewBag.quantityError.ProductName' + ' không đủ hàng tồn',
+														icon: 'error',
+														confirmButtonText: 'Ok',
+														timer: 2000,
+														timerProgressBar: true
+													});
+											</text>
+										}
+										
+																});
+									</script>
 								<script>
 									document.addEventListener('DOMContentLoaded', function () {
 										// Bắt sự kiện khi giá trị thay đổi
@@ -106,8 +125,18 @@
 													location.reload(true);
 												},
 												error: function (error) {
-													console.error('Error updating cart:', error);
-													location.reload(true);
+														Swal.fire({
+															title: 'Có lỗi xảy ra!',
+															text: 'Sản phẩm không đủ hàng tồn',
+															icon: 'error',
+															confirmButtonText: 'Ok',
+															timer: 2000,
+															timerProgressBar: true
+														}).then((result) => {
+															if (result.isConfirmed) {
+																location.reload(true);
+															}
+														});
 												}
 											});
 										}
