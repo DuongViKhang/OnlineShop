@@ -78,7 +78,7 @@
                                                 </li>
                                                 @if(Model.Rating==0){
 
-                                                    <span>Chưa có đánh giá</span>
+                                                    <span>Chưa có đánh giá  </span>
                                                 }
                                                 else
                                                 {
@@ -268,6 +268,7 @@
                                                         if (message) {
                                                             displayMessage("You", message);
                                                             pushMessageToFirebase(senderId, sellerId, message, senderId);
+                                                            document.getElementById('messageChatInput').value =''
                                                             connection.invoke("SendMessageToUser", sellerId, senderId, message).catch(function (err) {
                                                                 console.error(err.toString());
                                                             });
@@ -347,20 +348,36 @@
 
                                                         });
                                                         getSessionValue("userId", function (sessionValue) {
+
                                                             if (sessionValue) {
-                                                                // Lặp qua các khóa trong đối tượng data
-                                                                Object.values(data).forEach(function (mess) {
-                                                                    var messageObj = JSON.parse(mess);
-                                                                    if (sessionValue) {
-                                                                        if (sessionValue == messageObj.senderId) {
-                                                                            initChat(messageObj.content, true, messageObj.timeSend);
-                                                                        }
-                                                                        else {
-                                                                            initChat(messageObj.content, false, messageObj.timeSend);
-                                                                        }
-                                                                        document.getElementById("chat_fullscreen").scrollTop = document.getElementById("chat_fullscreen").scrollHeight;
+                                                                var productId = document.getElementById("productId").value;
+                                                                $.ajax({
+                                                                    url: '/Customer/GetSellerInfo', // Địa chỉ URL của controller và action
+                                                                    type: 'GET', // Phương thức GET
+                                                                    data: { productId: productId }, // Dữ liệu gửi đi, productId là tên tham số và productId là giá trị
+                                                                    success: function (seller) { // Hàm được gọi khi request thành công
+                                                                        // Lặp qua các khóa trong đối tượng data
+                                                                        Object.values(data).forEach(function (mess) {
+                                                                            var messageObj = JSON.parse(mess);
+                                                                            if (sessionValue) {
+                                                                                if (sessionValue == messageObj.senderId) {
+                                                                                    initChat(messageObj.content, true, messageObj.timeSend);
+                                                                                }
+                                                                                else {
+                                                                                    initChat(messageObj.content, false, messageObj.timeSend,seller);
+
+
+                                                                                }
+                                                                                document.getElementById("chat_fullscreen").scrollTop = document.getElementById("chat_fullscreen").scrollHeight;
+                                                                            }
+                                                                        });
+                
+                                                                    },
+                                                                    error: function (xhr, status, error) { // Hàm được gọi khi có lỗi xảy ra
+                                                                        console.error(xhr.responseText); // Hiển thị thông báo lỗi trong console
                                                                     }
                                                                 });
+                                                                
                                                             }
                                                         });
                                                         
@@ -395,9 +412,9 @@
                                                 // Tính thời gian đã trôi qua
                                                 var timeElapsed = calculateTimeElapsed(previousTime);
 
-                                                chatFull.innerHTML += '<div class="status2" style=" right: 0px; top:20px; position:relative ;font - size: 11px; opacity: 0.3;">' + timeElapsed + ' phút trước' + '</div>';
+                                                chatFull.innerHTML += '<div class="status2" style=" right: 0px; top:20px; position:relative ;font - size: 11px; opacity: 0.3;"></div>';
                                             }
-                                            function initChat(message, user, time) {
+                                            function initChat(message, user, time, seller) {
                                                 var chatFull = document.getElementById("chat_fullscreen");
 
                                                 if (user) {
@@ -423,8 +440,13 @@
 
                                                     
                                                 } else {
-                                                    var avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
-
+                                                    var productId = document.getElementById("productId").value;
+                                                    
+                                                    let avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
+                                                    if (seller != null) {
+                                                        avatarSrc = '/upload/images/avatars/customer/' + seller.avatar;
+                                                    }
+                                                   
                                                     // Tạo phần tử chat_msg_item_admin
                                                     var chatMsgItem = document.createElement("span");
                                                     chatMsgItem.className = "chat_msg_item chat_msg_item_admin";
@@ -465,10 +487,12 @@
                                                 }
                                             }
 
-                                            function addChat(message) {
+                                            function addChat(message, seller) {
                                                 var chatFull = document.getElementById("chat_fullscreen");
-                                                var avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
-
+                                                let avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
+                                                if (seller != null) {
+                                                    avatarSrc = '/upload/images/avatars/customer/' + seller.avatar;
+                                                }
                                                 // Thời gian trước đó
                                                 var previousTime = new Date();
                                                 previousTime.setMinutes(previousTime.getMinutes()); // Giả sử 10 phút trước
@@ -484,7 +508,8 @@
                                                 var chatAvatar = document.createElement('div');
                                                 chatAvatar.classList.add('chat_avatar');
                                                 var img = document.createElement('img');
-                                                img.src = avatarSrc;
+                                                img.src = avatarSrc
+                                               
                                                 img.style.borderRadius = '5px';
                                                 img.style.maxHeight = '50px';
                                                 img.style.maxWidth = '50px';
@@ -514,7 +539,20 @@
                                                 chatFull.appendChild(chatMsgItem);
                                             }
                                             connection.on("ReceiveMessage", function (senderId, message) {
-                                                addChat(message);
+                                                var productId = document.getElementById("productId").value;
+                                                // Tạo một request AJAX
+                                                $.ajax({
+                                                    url: '/Customer/GetSellerInfo', // Địa chỉ URL của controller và action
+                                                    type: 'GET', // Phương thức GET
+                                                    data: { productId: productId }, // Dữ liệu gửi đi, productId là tên tham số và productId là giá trị
+                                                    success: function (seller) { // Hàm được gọi khi request thành công
+                                                        addChat(message, seller);
+                                                    },
+                                                    error: function (xhr, status, error) { // Hàm được gọi khi có lỗi xảy ra
+                                                        console.error(xhr.responseText); // Hiển thị thông báo lỗi trong console
+                                                    }
+                                                });
+                                                
                                             });
 
                                             function calculateTimeElapsed(previousTime) {
@@ -541,7 +579,7 @@
                                                 });
                                             }
 
-                                            function getSelletInfo(key, callback) {
+                                            function getSelletInfo() {
                                                 var productId = document.getElementById("productId").value;
                                                 // Tạo một request AJAX
                                                 $.ajax({
@@ -549,14 +587,14 @@
                                                     type: 'GET', // Phương thức GET
                                                     data: { productId: productId }, // Dữ liệu gửi đi, productId là tên tham số và productId là giá trị
                                                     success: function (data) { // Hàm được gọi khi request thành công
-                                                        callback(data); // Hiển thị dữ liệu nhận được từ server trong console
+                                                        document.getElementById('sellerAvatar').src = '/upload/images/avatars/customer/' + data.avatar;
                                                     },
                                                     error: function (xhr, status, error) { // Hàm được gọi khi có lỗi xảy ra
                                                         console.error(xhr.responseText); // Hiển thị thông báo lỗi trong console
                                                     }
                                                 });
                                             }
-                                           
+                                           getSelletInfo()
                                             //ChatBox
                                             hideChat(4);
 
@@ -998,6 +1036,7 @@
                 avatar.style.height = '50px';
                 avatar.style.borderRadius = '50%';
 
+                
 
                 // Tạo phần tử tên người dùng
                 userName.textContent = user.userName;
@@ -1125,6 +1164,7 @@
         const peer = new Peer();
         let localStream;
         let globalCall;
+        let callTimeout;
         var userId = document.getElementById('userId').value;
         // Hiển thị peer ID của người dùng
         peer.on('open', function (id) {
@@ -1154,7 +1194,22 @@
                         globalCall = peer.call(peerId, localStream);
                         notifyIncomingCall(callId, userId);
                         document.getElementById('endCall').style = "display:block"
+                        
+
+                        // Thiết lập timeout để kiểm tra cuộc gọi
+                        callTimeout = setTimeout(function () {
+                            if (!globalCall.open) {
+                                Swal.fire({
+                                    title: "Người nhận không bắt máy",
+                                    icon: "warning",
+                                    button: "OK",
+                                });
+                                endCall();
+                            }
+                        }, 15000);
+
                         globalCall.on('stream', function (remoteStream) {
+                            clearTimeout(callTimeout);
                             document.getElementById('remoteVideo').srcObject = remoteStream;
                         });
                         globalCall.on('close', function () {
@@ -1171,7 +1226,7 @@
 
         // Xử lý sự kiện nhấn nút End Call
         function endCall(sendClose = false) {
-
+            clearTimeout(callTimeout);
             if (sendClose == true) {
                 closeCallToUser(document.getElementById('sellerId').value)
             }
@@ -1305,7 +1360,7 @@
         <div class="chat_header">
             <div class="chat_option">
                 <div class="header_img">
-                    <img src="/AdminAssets/img/avatars/avatar.jpg" style="border-radius:5px; max-height:50px; max-width: 50px; margin-top:-5px" />
+                    <img id="sellerAvatar" src="/AdminAssets/img/avatars/avatar.jpg" style="border-radius:5px; max-height:50px; max-width: 50px; margin-top:-5px" />
                 </div>
                 <span id="chat_head">@Model.Seller.UserName</span>
                 <span id="chat_fullscreen_loader" class="chat_fullscreen_loader"><i class="fullscreen zmdi zmdi-window-maximize"></i></span>
@@ -1345,3 +1400,119 @@
         </div>
     </div>
 </div>
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    /* Style cho nội dung modal */
+    .modal-content {
+        background-color: #fefefe;
+        padding: 20px;
+        border: 1px solid #888;
+        width: auto;
+        max-width: 50%;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        transform: translate(-50%, -120%);
+    }
+    /* Đóng modal (x) */
+    .close {
+        color: #aaa;
+        position: absolute;
+        top: 0;
+        right: 10px;
+        padding: 10px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+    .modal-buttons {
+        margin-top: 20px;
+        display: flex;
+        width: 30%;
+        justify-content: space-around;
+    }
+
+    .video-container {
+        width: 100%;
+        height: 80%;
+        position: relative; /* Đảm bảo vị trí tương đối cho video-container */
+    }
+
+    .remoteVideo {
+        width: 100%;
+        height: 100%;
+        position: relative; /* Đảm bảo vị trí tương đối cho video từ xa */
+        z-index: 1; /* Đảm bảo video từ xa ở dưới */
+    }
+
+    .localVideo {
+        width: 30%;
+        height: fit-content;
+        position: absolute; /* Đặt vị trí tuyệt đối cho video cục bộ */
+        top: 0px; /* Đặt video cục bộ ở trên cùng */
+        right: 0; /* Đặt video cục bộ ở bên trái */
+        z-index: 2; /* Đảm bảo video cục bộ ở trên video từ xa */
+    }
+
+    .local-video-border {
+        border: 2px solid red;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+        border-radius: 5px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>

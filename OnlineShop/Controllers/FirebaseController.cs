@@ -154,20 +154,15 @@ namespace OnlineShop.Controllers
 							if (messages != null)
 							{
 								var sortedMessages = messages.Values()
-									.OrderByDescending(m => DateTime.Parse((string)m["timeSend"]))
-									.ToList();
+							.OrderByDescending(m => DateTime.Parse((string)m["timeSend"]))
+							.Where(m => m["senderId"].ToString() != sellerId) // Lọc tin nhắn không phải từ sellerId
+							.ToList();
 
 								if (sortedMessages.Any())
 								{
-									if (sortedMessages.First()["senderId"].ToString() == sellerId)
-									{
-										lastMessage = sortedMessages.ElementAt(1).ToString();
-									}
-									else
-									{
-										lastMessage = sortedMessages.ElementAt(0).ToString();
+									// Lấy tin nhắn đầu tiên không phải từ sellerId
+									lastMessage = sortedMessages.First().ToString();
 
-									}
 									var mess = new
 									{
 										userId = ExtractUserId(pair.Key),

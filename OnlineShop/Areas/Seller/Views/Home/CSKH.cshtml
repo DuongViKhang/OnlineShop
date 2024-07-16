@@ -218,8 +218,9 @@
 						document.getElementById('messAlert').style = 'display:none'
 					}
 					let isFirst = true;
+					console.log(data)
 					data.forEach(function (item) {
-						var messageObj = JSON.parse(item.message);									
+						var messageObj = JSON.parse(item.message);
 						createCustomer(item.userId, sellerId, messageObj.content, messageObj.timeSend);
 						createChatPanel(item.userId, '')
 						if (isFirst) {
@@ -558,6 +559,7 @@
 			var chatPanel = document.getElementById("chat-panel-userId-" + senderId);
 
 			if (chatPanel) {
+				chatPanel.style.paddingRight = '40px'
 				// Tạo một phần tử div chứa tin nhắn
 				var messageContainer = document.createElement("div");
 				messageContainer.className = "row no-gutters";
@@ -709,6 +711,7 @@
 		const peer = new Peer();
 		let localStream;
 		let globalCall;
+		let callTimeout
 		// Hiển thị peer ID của người dùng
 		peer.on('open', function (id) {
 			if (document.getElementById('sellerId').value) {
@@ -736,10 +739,25 @@
 						globalCall = peer.call(peerId, localStream);
 						notifyIncomingCall(callId);
 						document.getElementById('endCall').style = "display:block"
+
+						// Thiết lập timeout để kiểm tra cuộc gọi
+						callTimeout = setTimeout(function () {
+							if (!globalCall.open) {
+								Swal.fire({
+									title: "Người nhận không bắt máy",
+									icon: "warning",
+									button: "OK",
+								});
+								endCall();
+							}
+						}, 15000);
+
 						globalCall.on('stream', function (remoteStream) {
+							clearTimeout(callTimeout); // Xóa timeout nếu kết nối thành công
 							document.getElementById('remoteVideo').srcObject = remoteStream;
 						});
 						globalCall.on('close', function () {
+							clearTimeout(callTimeout); // Xóa timeout nếu cuộc gọi kết thúc
 							console.log('Close call');
 							endCall();
 						});
@@ -749,11 +767,12 @@
 					console.error('Error accessing media devices:', err);
 				});
 		}
-
+		
 
 		// Xử lý sự kiện nhấn nút End Call
 		function endCall(sendClose = false) {
 			removeButtons();
+			clearTimeout(callTimeout);
 			if (sendClose == true) {
 				closeCallToUser(document.getElementById('senderId').value)
 			}
@@ -885,7 +904,7 @@
 	}
 <div id="myModal" class="modal" style="display: none;">
 	<!-- Nội dung modal -->
-	<div class="modal-content" style="transform: translate(-50%, -50%)">
+	<div class="modal-content" style="transform: translate(-50%, -120%)">
 		<span class="close" onclick="closeModal()">&times;</span>
 		<div class="video-container">
 			<video id="remoteVideo" autoplay playsinline class="remoteVideo"></video>
