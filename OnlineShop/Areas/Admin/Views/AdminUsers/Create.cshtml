@@ -52,7 +52,12 @@
             </div><br />
             <div class="form-group">
                 <label class="control-label">Vai trò</label>
-                <select asp-for="RoleId" class ="form-control" asp-items="ViewBag.RoleId"></select>
+                <select asp-for="RoleId" class="form-control">
+                    <option value = "1">Admin</option>
+                    <option value = "2">Customer</option>
+                    <option value = "3">Seller</option>
+                    <option value = "4">Shipper</option>
+                </select>
             </div><br />
             <div class="form-group">
                 <label class="control-label">Địa chỉ</label>

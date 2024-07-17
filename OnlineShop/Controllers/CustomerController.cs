@@ -394,6 +394,28 @@ namespace OnlineShop.Controllers
                             }
                         }
                     }
+                    var userLst = _context.Users.AsNoTracking().ToList();
+                    foreach (var item in userLst)
+                    {
+                        if (item.UserId != userId)
+                        {
+                            if (item.IdCard == user.IdCard)
+                            {
+                                ViewBag.mess = "ID đã tồn tại";
+                                return View(user);
+                            }
+                            if (item.Email == user.Email)
+                            {
+                                ViewBag.mess = "Email đã tồn tại";
+                                return View(user);
+                            }
+                            if (user.Phone == item.Phone)
+                            {
+                                ViewBag.mess = "SĐT đã tồn tại";
+                                return View(user);
+                            }
+                        }
+                    }
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }

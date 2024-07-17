@@ -86,10 +86,6 @@
                     {
                         <a class="btn btn-success" asp-area="Admin" asp-controller="AdminUsers" asp-action="Delete" asp-route-id="@item.UserId">Mở khóa</a>
                     }
-                    @if (item.IsDeleted == 2)
-                    {
-                        <a class="btn btn-success" asp-area="Admin" asp-controller="AdminUsers" asp-action="Delete" asp-route-id="@item.UserId">Duyệt</a>
-                    }
             </td>
             }
             @if(item.RoleId == 1)

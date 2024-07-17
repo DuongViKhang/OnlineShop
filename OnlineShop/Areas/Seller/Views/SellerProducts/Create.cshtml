@@ -43,7 +43,6 @@
                 <label class="control-label">Số lượng</label>
                 <input asp-for="Quantity" class="form-control" />
             </div>
-            <br />
             <div class="form-group">
                 <label hidden class="control-label">Đã bán</label>
                 <input hidden value="0" asp-for="Sold" class="form-control" />
@@ -70,14 +69,9 @@
                 <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
-            <br />
             <div class="form-group">
-                <label class="control-label">Đánh giá</label>
-                <select asp-for="Rating" class="form-control">
-                    <option value = "1">1 sao</option>
-                    <option value = "2">2 sao</option>
-                    <option value = "3">3 sao</option>
-                    <option value = "4">4 sao</option>
+                <label hidden class="control-label">Đánh giá</label>
+                <select hidden asp-for="Rating" class="form-control">
                     <option value = "5">5 sao</option>
                 </select>
                 <span asp-validation-for="Rating" class="text-danger"></span>
