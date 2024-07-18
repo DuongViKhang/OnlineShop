@@ -39,11 +39,11 @@
 													</td>
 													<td class="product-name"><a href="@Url.Action("Detail", "Product", new {id=item.ProductId})">@item.ProductName</a></td>
 													@if(item.StyleName != null){
-														<td class="product-name"><a href="#">@item.StyleName</a></td>
+														<td class="product-name">@item.StyleName</td>
 													}	
 													else
 													{
-														<td class="product-name"><a href="#">Mặc định</a></td>
+														<td class="product-name">Mặc định</td>
 													}
 												<td class="product-price"><span class="amount">@item.PromotionalPrice.ToString("#,##0") VNĐ</span></td>
 												<td class="quantity">
