@@ -391,6 +391,7 @@ namespace OnlineShop.Controllers
                     _context.CartItems.Remove(item);
                     var product = _context.Products.FirstOrDefault(p => p.ProductId == item.ProductId);
                     product.Quantity -= item.Count;
+                    product.Sold += item.Count;
                     _context.Products.Update(product);
                     await _context.SaveChangesAsync();
                 }
@@ -515,6 +516,7 @@ namespace OnlineShop.Controllers
                                 _context.CartItems.Remove(item);
                                 var product = _context.Products.FirstOrDefault(p => p.ProductId == item.ProductId);
                                 product.Quantity -= item.Count;
+                                product.Sold += item.Count;
                                 _context.Products.Update(product);
                                 await _context.SaveChangesAsync();
                             }
