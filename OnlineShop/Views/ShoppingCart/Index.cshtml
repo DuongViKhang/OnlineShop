@@ -115,31 +115,39 @@
 											updateCart(newVal, cartItemId);
 										});
 
-										function updateCart(newQuantity, cartItemId) {
-											var url = '@Url.Action("UpdateCart", "ShoppingCart")' + '?cartItemId=' + cartItemId + '&count=' + newQuantity;
-											$.ajax({
-												url: url,
-												type: 'GET',
-												success: function (data) {
-													console.log('Cart updated successfully:', data);
-													location.reload(true);
-												},
-												error: function (error) {
+											function updateCart(newQuantity, cartItemId) {
+												var url = '@Url.Action("UpdateCart", "ShoppingCart")' + '?cartItemId=' + cartItemId + '&count=' + newQuantity;
+												$.ajax({
+													url: url,
+													type: 'GET',
+													success: function (response) {
+														if (response.success) {
+															console.log('Cart updated successfully:', response);
+															location.reload(true);
+														} else {
+															Swal.fire({
+																icon: 'error',
+																title: 'Lỗi khi cập nhật giỏ hàng',
+																text: response.message,
+																timer: 2000,
+																timerProgressBar: true
+															}).then(result => {
+																location.reload(true);
+															});
+														
+														}
+													},
+													error: function (xhr) {
 														Swal.fire({
-															title: 'Có lỗi xảy ra!',
-															text: 'Sản phẩm không đủ hàng tồn',
 															icon: 'error',
-															confirmButtonText: 'Ok',
+															title: 'Lỗi',
+															text: 'Đã xảy ra lỗi khi xử lý yêu cầu của bạn.',
 															timer: 2000,
 															timerProgressBar: true
-														}).then((result) => {
-															if (result.isConfirmed) {
-																location.reload(true);
-															}
 														});
-												}
-											});
-										}
+													}
+												});
+											}
 									});
 								</script>
 							}
