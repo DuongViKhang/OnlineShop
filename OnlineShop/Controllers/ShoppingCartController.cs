@@ -92,19 +92,17 @@ namespace OnlineShop.Controllers
 			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
 			if (!isNum)
 			{
-				return BadRequest();
+				return Json(new { success = false, message = "Ký tự không hợp lệ" });
 			}
 			CartItem cartItem = _context.CartItems.FirstOrDefault(n => n.CartItemId == cartItemId && n.IsDeleted == 0 && n.Cart.UserId == userId);
-			if (count < 1)
+			if (count <=0)
 			{
-				_context.CartItems.Remove(cartItem);
-				_context.SaveChanges();
-				return Ok();
+				return Json(new { success = false, message = "Số lượng phải lớn hơn 0" });
 			}
 			Product product = _context.Products.FirstOrDefault(n => n.ProductId == cartItem.ProductId);
 			if (count > product.Quantity)
 			{
-				return BadRequest();
+				return Json(new { success = false, message = "Số lượng sản phẩm đã chọn vượt quá số lượng còn lại trong kho" });
 			}
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
 			try
@@ -116,13 +114,13 @@ namespace OnlineShop.Controllers
 				}
 
 				_context.SaveChanges();
-				return Ok();
+				return Json(new { success = true });
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error adding product to cart.");
 				TempData["ErrorMessage"] = "Error adding the product to the cart.";
-				return BadRequest();
+				return Json(new { success = false, message = ex.Message });
 			}
 		}
 
