@@ -167,11 +167,12 @@ namespace OnlineShop.Controllers
 		{
             if (quantity <= 0)
             {
-                quantity = 1;
+                string mess = "Số lượng sản phẩm đã chọn phải lớn hơn 0";
+                return RedirectToAction("Detail", "Product", new { id = productId, mess = mess });
             }
             if (quantity > _context.Products.FirstOrDefault(n => n.ProductId == productId).Quantity)
             {
-                string mess = "Mua thất bại";
+                string mess = "Số lượng sản phẩm đã chọn vượt quá số lượng còn lại trong kho";
                 return RedirectToAction("Detail", "Product", new { id = productId, mess = mess });
             }
             int userId;

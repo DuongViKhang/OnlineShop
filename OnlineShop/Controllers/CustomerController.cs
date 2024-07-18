@@ -119,6 +119,16 @@ namespace OnlineShop.Controllers
                     ViewBag.mess = "Vui lòng điền đẩy đủ thông tin";
                     return View();
                 }
+                if (user.Phone.Length != 10)
+                {
+                    ViewBag.mess = "SĐT phải gồm 10 ký tự";
+                    return View();
+                }
+                if (user.IdCard.Length != 12)
+                {
+                    ViewBag.mess = "ID Card phải gồm 12 ký tự";
+                    return View();
+                }
                 HttpContext.Session.SetString("username", user.UserName);
                 HttpContext.Session.SetString("email", user.Email);
                 HttpContext.Session.SetString("phone", user.Phone);
@@ -354,6 +364,26 @@ namespace OnlineShop.Controllers
                     {
                         user.Avatar = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == userId).Avatar;
                     }
+                    ViewBag.username = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == userId).UserName;
+                    int cartId = _context.Carts.AsNoTracking().FirstOrDefault(n => n.UserId == userId).CartId;
+
+                    var query = from s1 in _context.Carts.AsNoTracking().Where(s1 => s1.UserId == userId)
+                                join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                                select new OrderCartViewModel
+                                {
+                                    CartItemId = s2.CartItemId,
+                                    Image = s2.Product.Image,
+                                    PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                                    ProductName = s2.Product.ProductName,
+                                    Count = s2.Count,
+                                    Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                                    StyleName = s2.Style.StyleName
+                                };
+
+                    List<OrderCartViewModel> lst = query.ToList();
+                    ViewBag.quantity = lst.Count;
+                    ViewBag.cartItems = lst;
+                    ViewBag.totalCartItems = lst.Sum(n => n.Total);
                     foreach (PropertyInfo pi in user.GetType().GetProperties())
                     {
                         if (pi.PropertyType == typeof(string))
@@ -370,32 +400,43 @@ namespace OnlineShop.Controllers
                                 {
                                     return RedirectToAction("Index", "Home", new { area = "Admin" });
                                 }
-                                ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-                                int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
-                                var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
-                                            join s2 in _context.CartItems on s1.CartId equals s2.CartId
-                                            select new OrderCartViewModel
-                                            {
-                                                CartItemId = s2.CartItemId,
-                                                Image = s2.Product.Image,
-                                                PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
-                                                ProductName = s2.Product.ProductName,
-                                                Count = s2.Count,
-                                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
-                                                StyleName = s2.Style.StyleName
-                                            };
-                                List<OrderCartViewModel> lst = query.ToList();
-                                ViewBag.quantity = lst.Count;
-                                ViewBag.cartItems = lst;
-                                ViewBag.totalCartItems = lst.Sum(n => n.Total);
                                 user = _context.Users.AsNoTracking().FirstOrDefault(m => m.UserId == userId);
                                 ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
                                 return View(user);
                             }
                         }
                     }
+                    if (user.Phone.Length != 10)
+                    {
+                        ViewBag.mess = "SĐT phải gồm 10 ký tự";
+                        return View(user);
+                    }
+                    if (user.IdCard.Length != 12)
+                    {
+                        ViewBag.mess = "ID Card phải gồm 12 ký tự";
+                        return View(user);
+                    }
+                    var userLst = _context.Users.AsNoTracking().ToList();
+                    foreach (var item in userLst)
+                    {
+                        if (item.UserId != userId)
+                        {
+                            if (item.IdCard == user.IdCard)
+                            {
+                                ViewBag.mess = "ID đã tồn tại";
+                                return View(user);
+                            }
+                            if (user.Phone == item.Phone)
+                            {
+                                ViewBag.mess = "SĐT đã tồn tại";
+                                return View(user);
+                            }
+                        }
+                    }
+                    _context.Attach(user);
                     _context.Update(user);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Profile));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -408,7 +449,6 @@ namespace OnlineShop.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Profile));
             }
             return View(user);
         }

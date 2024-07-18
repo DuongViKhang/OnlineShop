@@ -154,16 +154,18 @@ namespace OnlineShop.Areas.Admin.Controllers
                 ViewBag.mess = "Giá khuyến mãi phải thấp hơn giá gốc";
                 return View(product);
             }
+            if (product.Quantity <= 0)
+            {
+                ViewBag.mess = "Số lượng đã bán không được bé hơn 0";
+                return View(product);
+            }
+            if (product.Sold < 0)
+            {
+                ViewBag.mess = "Số lượng đã bán không được bé hơn 0";
+                return View(product);
+            }
             if (ModelState.IsValid)
             {
-                if(product.Quantity <= 0)
-                {
-                    product.Quantity = 1;
-                }
-                if(product.Sold < 0)
-                {
-                    product.Sold = 0;
-                }
                 if (Image != null)
                 {
                     product.Image = Image.FileName;
@@ -247,6 +249,16 @@ namespace OnlineShop.Areas.Admin.Controllers
                 ViewBag.mess = "Giá khuyến mãi phải thấp hơn giá gốc";
                 return View(product);
             }
+            if (product.Quantity <= 0)
+            {
+                ViewBag.mess = "Số lượng đã bán không được bé hơn 0";
+                return View(product);
+            }
+            if (product.Sold < 0)
+            {
+                ViewBag.mess = "Số lượng đã bán không được bé hơn 0";
+                return View(product);
+            }
             if (id != product.ProductId)
             {
                 return NotFound();
@@ -254,14 +266,6 @@ namespace OnlineShop.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (product.Quantity <= 0)
-                {
-                    product.Quantity = 1;
-                }
-                if (product.Sold < 0)
-                {
-                    product.Sold = 0;
-                }
                 try
                 {
                     product.Image = _context.Products.AsNoTracking().FirstOrDefault(n => n.ProductId == id).Image;

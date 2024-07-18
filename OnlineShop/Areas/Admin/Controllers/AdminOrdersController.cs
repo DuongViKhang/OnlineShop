@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using OnlineShop.Models;
 using X.PagedList;
 using OnlineShop.ViewModels;
+using System.Globalization;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -23,7 +24,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminOrders
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int? page, string statusOrders, int? paymentStatus, string keyword)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -37,7 +38,51 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User).OrderByDescending(o => o.Date);
+            var onlineShopContext = _context.Orders
+                                    .Include(o => o.Status)
+                                    .Include(o => o.User)
+                                    .AsQueryable();
+            if (statusOrders != null)
+            {
+                ViewBag.statusOrder = statusOrders;
+                onlineShopContext = onlineShopContext.Where(n => n.Status.StatusName == statusOrders);
+            }
+            if (paymentStatus != null)
+            {
+                if (paymentStatus == 1)
+                {
+                    ViewBag.paymentStatus = "Đã thanh toán";
+                }
+                else if (paymentStatus == 0)
+                {
+                    ViewBag.paymentStatus = "Chưa thanh toán";
+                }
+                onlineShopContext = onlineShopContext.Where(n => n.IsPay == paymentStatus);
+            }
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                ViewBag.keyword = keyword;
+                var cultureInfo = new CultureInfo("de-DE");
+                DateTime dt;
+                bool isDateParsed = DateTime.TryParse(keyword, cultureInfo, DateTimeStyles.None, out dt);
+                int num;
+                bool isNumber = int.TryParse(keyword, out num);
+                if (isDateParsed)
+                {
+                    onlineShopContext = onlineShopContext.Where(n => n.Date.HasValue &&
+                                                                     n.Date.Value.Year == dt.Year &&
+                                                                     n.Date.Value.Month == dt.Month &&
+                                                                     n.Date.Value.Day == dt.Day);
+                }
+                else
+                {
+                    onlineShopContext = onlineShopContext.Where(n => n.OrderId.ToString().Contains(keyword) ||
+                                                                    n.User.Email.Contains(keyword));
+                }
+            }
+
+            onlineShopContext = onlineShopContext.OrderByDescending(o => o.StatusId == 1)
+                                                 .ThenByDescending(o => o.Date);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 

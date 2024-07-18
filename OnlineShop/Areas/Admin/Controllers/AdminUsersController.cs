@@ -110,6 +110,10 @@ namespace OnlineShop.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                int userId;
+                string roleName = HttpContext.Session.GetString("roleName");
+                bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+                ViewBag.username = _context.Users.AsNoTracking().Where(n => n.UserId == userId).FirstOrDefault().UserName;
                 user.Password = encryptPassword(user.Password);
                 if (Avatar != null)
                 {
@@ -138,6 +142,16 @@ namespace OnlineShop.Areas.Admin.Controllers
                             return View();
                         }
                     }
+                }
+                if(user.Phone.Length != 10)
+                {
+                    ViewBag.mess = "SĐT phải gồm 10 ký tự";
+                    return View();
+                }
+                if(user.IdCard.Length != 12)
+                {
+                    ViewBag.mess = "ID Card phải gồm 12 ký tự";
+                    return View();
                 }
                 var lst = _context.Users.ToList();
                 foreach (var item in lst)
@@ -219,6 +233,10 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 try
                 {
+                    int userId;
+                    string roleName = HttpContext.Session.GetString("roleName");
+                    bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+                    ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
                     user.Password = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == id).Password;
                     if (Password != null)
                     {
@@ -256,23 +274,36 @@ namespace OnlineShop.Areas.Admin.Controllers
                             }
                         }
                     }
-                    var lst = _context.Users.ToList();
+                    if (user.Phone.Length != 10)
+                    {
+                        ViewBag.mess = "SĐT phải gồm 10 ký tự";
+                        return View();
+                    }
+                    if (user.IdCard.Length != 12)
+                    {
+                        ViewBag.mess = "ID Card phải gồm 12 ký tự";
+                        return View();
+                    }
+                    var lst = _context.Users.AsNoTracking().ToList();
                     foreach (var item in lst)
                     {
-                        if (item.IdCard == user.IdCard)
+                        if (item.UserId != id)
                         {
-                            ViewBag.mess = "ID đã tồn tại";
-                            return View();
-                        }
-                        if (item.Email == user.Email)
-                        {
-                            ViewBag.mess = "Email đã tồn tại";
-                            return View();
-                        }
-                        if (user.Phone == item.Phone)
-                        {
-                            ViewBag.mess = "SĐT đã tồn tại";
-                            return View();
+                            if (item.IdCard == user.IdCard)
+                            {
+                                ViewBag.mess = "ID đã tồn tại";
+                                return View();
+                            }
+                            if (item.Email == user.Email)
+                            {
+                                ViewBag.mess = "Email đã tồn tại";
+                                return View();
+                            }
+                            if (user.Phone == item.Phone)
+                            {
+                                ViewBag.mess = "SĐT đã tồn tại";
+                                return View();
+                            }
                         }
                     }
                     _context.Update(user);
@@ -336,7 +367,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 user.IsDeleted = 1;
             }
-            else if (user.IsDeleted == 1 || user.IsDeleted == 2)
+            else if (user.IsDeleted == 1)
             {
                 user.IsDeleted = 0;
             }
