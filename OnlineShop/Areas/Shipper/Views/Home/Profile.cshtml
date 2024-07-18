@@ -177,6 +177,7 @@
                             }
                         });
                     } else {
+                        console.log(data.message)
                         Swal.fire({
                             title: 'Thất bại!',
                             text: data.message || 'Có lỗi xảy ra trong quá trình lưu thay đổi.',
@@ -186,6 +187,7 @@
                     }
                 })
                 .catch(error => {
+                    console.log(error)
                     Swal.fire({
                         title: 'Thất bại!',
                         text: 'Có lỗi xảy ra trong quá trình lưu thay đổi.',

@@ -88,6 +88,7 @@
 		}).catch(function (err) {
 			return console.error(err.toString());
 		});
+		document
 		document.addEventListener("DOMContentLoaded", function () {
 			// Tạo một phần tử input hidden
 			var hiddenInput = document.createElement("input");
@@ -195,6 +196,9 @@
 				getMessageFromFirebase(userId, sellerId);
 				friendDrawer.setAttribute("isloaded", true);
 			}
+			friendDrawer.style.background = '#74b9ff';
+			
+			updateFriendDrawer(friendDrawer);
 			$('.chat-panel').hide();
 			$('#chat-panel-userId-' + userId).show();
 			$('#chat-panel-userId-' + userId).scrollTop = $('#chat-panel-userId-' + userId).scrollHeight;
@@ -218,7 +222,6 @@
 						document.getElementById('messAlert').style = 'display:none'
 					}
 					let isFirst = true;
-					console.log(data)
 					data.forEach(function (item) {
 						var messageObj = JSON.parse(item.message);
 						createCustomer(item.userId, sellerId, messageObj.content, messageObj.timeSend);
@@ -425,12 +428,13 @@
 
 			// Tính thời gian đã trôi qua
 			var timeElapsed = calculateTimeElapsed(previousTime);
-
+			var sellerId = document.getElementById('sellerId').value
 			if (!document.getElementById("senderId")) {
 				// Tạo một phần tử input hidden
 				var hiddenInput = document.createElement("input");
 				hiddenInput.type = "hidden";
 				hiddenInput.id = "senderId";
+			
 				hiddenInput.value = senderId; // Đặt giá trị senderId vào input
 
 				document.body.appendChild(hiddenInput);
@@ -461,10 +465,19 @@
 
 
 		});
+		let currentFriendDrawer = null;
+		function clearFriendDrawer(){
+			if (currentFriendDrawer) {
+				currentFriendDrawer.style.background = '';
+			}
+		}
+		function updateFriendDrawer(friendDrawer){
+			currentFriendDrawer = friendDrawer
+		}
 		function createCustomer(userId, sellerId, message, time = '') {
 			if (!document.getElementById("friend-drawer-unique-userId-" + userId + "-sellerId-" + sellerId)) {
 				var customerPanel = document.getElementById("customer-panel");
-
+				var currentFriendDrawer = null;
 				// Tạo phần tử div chứa bạn bè
 				var friendDrawer = document.createElement("div");
 				friendDrawer.className = "friend-drawer friend-drawer--onhover";
@@ -472,11 +485,15 @@
 				friendDrawer.setAttribute("user-id", userId);
 				friendDrawer.setAttribute("isloaded", false);
 				friendDrawer.onclick = function () {
+					clearFriendDrawer();
+
 					// Xử lý sự kiện khi click vào phần tử friendDrawer
 					if (this.getAttribute('isloaded') == 'false') {
 						getMessageFromFirebase(userId, sellerId);
 						friendDrawer.setAttribute("isloaded", true);
 					}
+					updateFriendDrawer(this);
+					this.style.background = '#74b9ff';
 					$('.chat-panel').hide();
 					$('#chat-panel-userId-' + userId).show();
 					$('#chat-panel-userId-' + userId).scrollTop = $('#chat-panel-userId-' + userId).scrollHeight;
@@ -750,7 +767,7 @@
 								});
 								endCall();
 							}
-						}, 15000);
+						}, 10000);
 
 						globalCall.on('stream', function (remoteStream) {
 							clearTimeout(callTimeout); // Xóa timeout nếu kết nối thành công
@@ -854,8 +871,6 @@
 					peerId: peerId
 				}),
 				success: function (response) {
-					// Xử lý kết quả thành công
-					console.log(response);
 				},
 				error: function (xhr, textStatus, errorThrown) {
 					// Xử lý lỗi

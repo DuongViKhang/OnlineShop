@@ -188,6 +188,14 @@ namespace OnlineShop.Areas.Shipper.Controllers
         {
             int userId;
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if(user.IdCard.Length != 12)
+            {
+                return Json(new { success = false, message = "Id không phải đủ 12 số" });
+            }
+            if (user.Phone.Length != 10)
+            {
+                return Json(new { success = false, message = "Số điện thoại phải đủ 10 số" });
+            }
             if (ModelState.IsValid)
             {
                 try

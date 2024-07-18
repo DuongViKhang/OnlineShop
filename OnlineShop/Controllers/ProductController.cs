@@ -348,6 +348,7 @@ namespace OnlineShop.Controllers
                 };
                 Product product1 = _context.Products.FirstOrDefault(n => n.ProductId == productId);
                 product1.Quantity -= count;
+                product1.Sold += count;
                 _context.OrderItems.Add(orderItem);
                 await _context.SaveChangesAsync();
                 TempData["orderSuccess"] = true;
@@ -544,6 +545,7 @@ namespace OnlineShop.Controllers
                                 _context.OrderItems.Add(orderItem);
                                 var product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
                                 product.Quantity -=count;
+                                product.Sold += count;
                                 _context.Update(product); 
                                 await _context.SaveChangesAsync();
 

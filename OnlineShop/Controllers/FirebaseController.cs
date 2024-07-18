@@ -177,7 +177,16 @@ namespace OnlineShop.Controllers
 							}
 						}
 					}
-					return Ok(chats);
+					var sortedChats = chats
+	                .Select(chat => new
+	                {
+		                Chat = chat,
+		                TimeSend = JObject.Parse(((dynamic)chat).message)["timeSend"].ToObject<DateTime>()
+	                })
+	                .OrderByDescending(x => x.TimeSend)
+	                .Select(x => x.Chat)
+	                .ToList();
+					return Ok(sortedChats);
 				}
 				else
 				{
