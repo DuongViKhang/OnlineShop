@@ -63,12 +63,22 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 ViewBag.keyword = keyword;
                 var cultureInfo = new CultureInfo("de-DE");
-                var dt = DateTime.Parse(keyword, cultureInfo);
-                onlineShopContext = onlineShopContext.Where(n => n.OrderId.ToString().Contains(keyword) ||
-                                                                    n.User.Email.Contains(keyword) ||
-                                                                    (n.Date.Value.Day == dt.Day &&
-                                                                    n.Date.Value.Month == dt.Month &&
-                                                                    n.Date.Value.Year == dt.Year));
+                DateTime dt;
+                bool isDateParsed = DateTime.TryParse(keyword, cultureInfo, DateTimeStyles.None, out dt);
+                int num;
+                bool isNumber = int.TryParse(keyword, out num);
+                if (isDateParsed)
+                {
+                    onlineShopContext = onlineShopContext.Where(n => n.Date.HasValue &&
+                                                                     n.Date.Value.Year == dt.Year &&
+                                                                     n.Date.Value.Month == dt.Month &&
+                                                                     n.Date.Value.Day == dt.Day);
+                }
+                else
+                {
+                    onlineShopContext = onlineShopContext.Where(n => n.OrderId.ToString().Contains(keyword) ||
+                                                                    n.User.Email.Contains(keyword));
+                }
             }
 
             onlineShopContext = onlineShopContext.OrderByDescending(o => o.StatusId == 1)

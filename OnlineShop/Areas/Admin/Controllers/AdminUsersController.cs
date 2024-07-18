@@ -143,6 +143,16 @@ namespace OnlineShop.Areas.Admin.Controllers
                         }
                     }
                 }
+                if(user.Phone.Length != 10)
+                {
+                    ViewBag.mess = "SĐT phải gồm 10 ký tự";
+                    return View();
+                }
+                if(user.IdCard.Length != 12)
+                {
+                    ViewBag.mess = "ID Card phải gồm 12 ký tự";
+                    return View();
+                }
                 var lst = _context.Users.ToList();
                 foreach (var item in lst)
                 {
@@ -263,6 +273,16 @@ namespace OnlineShop.Areas.Admin.Controllers
                                 return View();
                             }
                         }
+                    }
+                    if (user.Phone.Length != 10)
+                    {
+                        ViewBag.mess = "SĐT phải gồm 10 ký tự";
+                        return View();
+                    }
+                    if (user.IdCard.Length != 12)
+                    {
+                        ViewBag.mess = "ID Card phải gồm 12 ký tự";
+                        return View();
                     }
                     var lst = _context.Users.AsNoTracking().ToList();
                     foreach (var item in lst)
