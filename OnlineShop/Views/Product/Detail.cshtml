@@ -693,7 +693,7 @@
                     @if (ViewBag.mess != null)
                     {
                         <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;position:relative">
-                            <strong>@ViewBag.mess!</strong> Số lượng sản phẩm đã chọn vượt quá số lượng còn lại trong kho
+                            <strong>Thêm vào giỏ hàng thất bại!</strong> @ViewBag.mess
                         </div>
                     }
                 </div>
@@ -760,6 +760,14 @@
    </div>
 
     <script>
+        window.onload = function() {
+                    var errorMessage = document.getElementById("myAlert");
+                    if (errorMessage) {
+                        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        errorMessage.focus();
+                    }
+        };
+
         document.addEventListener('DOMContentLoaded', function () {
             const starContainer = document.getElementById('starContainer');
             const stars = starContainer.querySelectorAll('.star');

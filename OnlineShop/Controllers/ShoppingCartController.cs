@@ -33,16 +33,17 @@ namespace OnlineShop.Controllers
 		[ValidateAntiForgeryToken]
 		public IActionResult AddToCart(int productId, int count, int styleId)
 		{
-			if(count <= 0)
+            if (count <= 0)
             {
-				count = 1;
+                string mess = "Số lượng sản phẩm đã chọn phải lớn hơn 0";
+                return RedirectToAction("Detail", "Product", new { id = productId, mess = mess });
             }
-			if(count > _context.Products.FirstOrDefault(n => n.ProductId == productId).Quantity)
+            if (count > _context.Products.FirstOrDefault(n => n.ProductId == productId).Quantity)
             {
-				string mess = "Thêm vào giỏ hàng thất bại";
-				return RedirectToAction("Detail", "Product", new { id = productId, mess = mess });
+                string mess = "Số lượng sản phẩm đã chọn vượt quá số lượng còn lại trong kho";
+                return RedirectToAction("Detail", "Product", new { id = productId, mess = mess });
             }
-			int userId;
+            int userId;
 			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
 			if (!isNum)
 			{
